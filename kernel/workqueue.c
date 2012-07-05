@@ -1833,7 +1833,7 @@ static void send_mayday(struct work_struct *work)
 
 	lockdep_assert_held(&wq_mayday_lock);
 
-	if (!wq->rescuer)
+	if (!(wq->flags & WQ_RESCUER))
 		return;
 
 	/* mayday mayday mayday */
@@ -2239,7 +2239,7 @@ sleep:
  * @__rescuer: self
  *
  * Workqueue rescuer thread function.  There's one rescuer for each
- * workqueue which has WQ_MEM_RECLAIM set.
+ * workqueue which has WQ_RESCUER set.
  *
  * Regular work processing on a pool may block trying to create a new
  * worker which uses GFP_KERNEL allocation which has slight chance of
@@ -2738,7 +2738,7 @@ static bool start_flush_work(struct work_struct *work, struct wq_barrier *barr)
 	 * flusher is not running on the same workqueue by verifying write
 	 * access.
 	 */
-	if (pwq->wq->saved_max_active == 1 || pwq->wq->rescuer)
+	if (pwq->wq->saved_max_active == 1 || pwq->wq->flags & WQ_RESCUER)
 		lock_map_acquire(&pwq->wq->lockdep_map);
 	else
 		lock_map_acquire_read(&pwq->wq->lockdep_map);
@@ -4096,6 +4096,13 @@ struct workqueue_struct *__alloc_workqueue_key(const char *fmt,
 	vsnprintf(wq->name, sizeof(wq->name), fmt, args);
 	va_end(args);
 
+	/*
+	 * Workqueues which may be used during memory reclaim should
+	 * have a rescuer to guarantee forward progress.
+	 */
+	if (flags & WQ_MEM_RECLAIM)
+		flags |= WQ_RESCUER;
+
 	max_active = max_active ?: WQ_DFL_ACTIVE;
 	max_active = wq_clamp_max_active(max_active, flags, wq->name);
 
@@ -4115,11 +4122,7 @@ struct workqueue_struct *__alloc_workqueue_key(const char *fmt,
 	if (alloc_and_link_pwqs(wq) < 0)
 		goto err_free_wq;
 
-	/*
-	 * Workqueues which may be used during memory reclaim should
-	 * have a rescuer to guarantee forward progress.
-	 */
-	if (flags & WQ_MEM_RECLAIM) {
+	if (flags & WQ_RESCUER) {
 		struct worker *rescuer;
 
 		rescuer = alloc_worker();
@@ -4215,10 +4218,9 @@ void destroy_workqueue(struct workqueue_struct *wq)
 
 	workqueue_sysfs_unregister(wq);
 
-	if (wq->rescuer) {
+	if (wq->flags & WQ_RESCUER) {
 		kthread_stop(wq->rescuer->task);
 		kfree(wq->rescuer);
-		wq->rescuer = NULL;
 	}
 
 	if (!(wq->flags & WQ_UNBOUND)) {

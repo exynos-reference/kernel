@@ -56,6 +56,9 @@ static int dma_buf_release(struct inode *inode, struct file *file)
 	list_del(&dmabuf->list_node);
 	mutex_unlock(&db_list.lock);
 
+#ifdef CONFIG_DMA_SHARED_BUFFER_USES_KDS
+	kds_resource_term(&dmabuf->kds);
+#endif
 	kfree(dmabuf);
 	return 0;
 }
@@ -174,6 +177,9 @@ struct dma_buf *dma_buf_export_named(void *priv, const struct dma_buf_ops *ops,
 	mutex_lock(&db_list.lock);
 	list_add(&dmabuf->list_node, &db_list.head);
 	mutex_unlock(&db_list.lock);
+#ifdef CONFIG_DMA_SHARED_BUFFER_USES_KDS
+	kds_resource_init(&dmabuf->kds);
+#endif
 
 	return dmabuf;
 }
