@@ -132,6 +132,16 @@ int exynos_drm_gem_userptr_ioctl(struct drm_device *dev, void *data,
 /* get buffer information to memory region allocated by gem. */
 int exynos_drm_gem_get_ioctl(struct drm_device *dev, void *data,
 				      struct drm_file *file_priv);
+/*
+ * acquire gem object for CPU access.
+ */
+int exynos_drm_gem_cpu_acquire_ioctl(struct drm_device *dev, void* data,
+			       struct drm_file *file_priv);
+/*
+ * release gem object after CPU access.
+ */
+int exynos_drm_gem_cpu_release_ioctl(struct drm_device *dev, void* data,
+			       struct drm_file *file_priv);
 
 /* get buffer size to gem handle. */
 unsigned long exynos_drm_gem_get_size(struct drm_device *dev,
