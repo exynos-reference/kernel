@@ -2076,9 +2076,6 @@ static void hdmi_poweron(struct exynos_drm_display *display)
 	regmap_update_bits(hdata->pmureg, PMU_HDMI_PHY_CONTROL,
 			PMU_HDMI_PHY_ENABLE_BIT, 1);
 
-	clk_prepare_enable(res->hdmi);
-	clk_prepare_enable(res->sclk_hdmi);
-
 	hdmiphy_poweron(hdata);
 	hdmi_commit(display);
 }
@@ -2099,9 +2096,6 @@ static void hdmi_poweroff(struct exynos_drm_display *display)
 	hdmiphy_poweroff(hdata);
 
 	cancel_delayed_work(&hdata->hotplug_work);
-
-	clk_disable_unprepare(res->sclk_hdmi);
-	clk_disable_unprepare(res->hdmi);
 
 	/* reset pmu hdmiphy control bit to disable hdmiphy */
 	regmap_update_bits(hdata->pmureg, PMU_HDMI_PHY_CONTROL,
@@ -2239,6 +2233,14 @@ static int hdmi_resources_init(struct hdmi_context *hdata)
 			return PTR_ERR(res->regulators[i]);
 		}
 	}
+
+	/*
+	 * These two clocks are not moved into hdmi_poweron/off since system
+	 * fails to suspend if VPLL clock of 70.5 MHz is used and these
+	 * clocks are disabled before suspend. So enable them here.
+	 */
+	clk_prepare_enable(res->sclk_hdmi);
+	clk_prepare_enable(res->hdmi);
 
 	return 0;
 fail:
@@ -2493,7 +2495,6 @@ err_hdmiphy:
 		put_device(&hdata->hdmiphy_port->dev);
 err_ddc:
 	put_device(&hdata->ddc_adpt->dev);
-
 err_del_component:
 	exynos_drm_component_del(&pdev->dev, EXYNOS_DEVICE_TYPE_CONNECTOR);
 
