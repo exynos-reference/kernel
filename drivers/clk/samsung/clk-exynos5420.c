@@ -130,6 +130,12 @@
 #define KPLL_CON0		0x28100
 #define SRC_KFC			0x28200
 #define DIV_KFC0		0x28500
+#define SRC_MASK_CPERI		0x04300
+#define SRC_MASK_TOP0		0x10300
+#define SRC_MASK_TOP1		0x10304
+#define SRC_MASK_ISP		0x10370
+#define GATE_BUS_DISP1		0x10728
+
 
 /* Exynos5x SoC type */
 enum exynos5x_soc {
@@ -249,6 +255,22 @@ static unsigned long exynos5800_clk_regs[] __initdata = {
 	GATE_IP_CAM,
 };
 
+static const struct samsung_clk_reg_dump exynos5420_set_clksrc[] = {
+	{ .offset = SRC_MASK_CPERI,		.value = 0xffffffff, },
+	{ .offset = SRC_MASK_TOP0,		.value = 0x11111111, },
+	{ .offset = SRC_MASK_TOP1,		.value = 0x11101111, },
+	{ .offset = SRC_MASK_TOP2,		.value = 0x11111110, },
+	{ .offset = SRC_MASK_TOP7,		.value = 0x00111100, },
+	{ .offset = SRC_MASK_DISP10,		.value = 0x11111110, },
+	{ .offset = SRC_MASK_MAU,		.value = 0x10000000, },
+	{ .offset = SRC_MASK_FSYS,		.value = 0x11111110, },
+	{ .offset = SRC_MASK_PERIC0,		.value = 0x11111110, },
+	{ .offset = SRC_MASK_PERIC1,		.value = 0x11111100, },
+	{ .offset = SRC_MASK_ISP,		.value = 0x11111000, },
+	{ .offset = GATE_BUS_DISP1,		.value = 0xffffffff, },
+	{ .offset = GATE_IP_PERIC,		.value = 0xffffffff, },
+};
+
 static int exynos5420_clk_suspend(void)
 {
 	samsung_clk_save(reg_base, exynos5x_save,
@@ -258,6 +280,8 @@ static int exynos5420_clk_suspend(void)
 		samsung_clk_save(reg_base, exynos5800_save,
 				ARRAY_SIZE(exynos5800_clk_regs));
 
+	samsung_clk_restore(reg_base, exynos5420_set_clksrc,
+					ARRAY_SIZE(exynos5420_set_clksrc));
 	return 0;
 }
 
