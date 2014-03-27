@@ -111,6 +111,16 @@ IS_SAMSUNG_CPU(exynos5800, EXYNOS5800_SOC_ID, EXYNOS5_SOC_MASK)
 #define soc_is_exynos5() (soc_is_exynos5250() || soc_is_exynos5410() || \
 			  soc_is_exynos5420() || soc_is_exynos5800())
 
+#define EXYNOS5420_USE_STANDBY_WFI_ALL	(EXYNOS5420_ARM_USE_STANDBY_WFI0  \
+					 | EXYNOS5420_ARM_USE_STANDBY_WFI1  \
+					 | EXYNOS5420_ARM_USE_STANDBY_WFI2  \
+					 | EXYNOS5420_ARM_USE_STANDBY_WFI3  \
+					 | EXYNOS5420_KFC_USE_STANDBY_WFI0  \
+					 | EXYNOS5420_KFC_USE_STANDBY_WFI1  \
+					 | EXYNOS5420_KFC_USE_STANDBY_WFI2  \
+					 | EXYNOS5420_KFC_USE_STANDBY_WFI3)
+
+
 void mct_init(void __iomem *base, int irq_g0, int irq_l0, int irq_l1);
 
 struct map_desc;
