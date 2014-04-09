@@ -779,6 +779,18 @@
 		status = "disabled";
 	};
 
+	mali {
+		compatible = "arm,mali";
+		reg = <0x11800000 0x5000>;
+		interrupts = <0 118 0>, <0 119 0>, <0 117 0>;
+		interrupt-names = "JOB", "MMU", "GPU";
+		clocks = <&clock CLK_G3D>, <&clock CLK_G3D>,
+			<&clock CLK_MOUT_GPLL>, <&clock CLK_FIN_PLL>,
+			<&clock CLK_FOUT_GPLL>;
+		clock-names = "g3d", "aclk_g3d", "mout_gpll",
+			"ext_xtal", "fout_gpll";
+	};
+
 	sss@10830000 {
 		compatible = "samsung,exynos4210-secss";
 		reg = <0x10830000 0x10000>;
