@@ -356,6 +356,7 @@
 #define EXYNOS5420_ATB_KFC					(1 << 13)
 #define EXYNOS5420_ATB_ISP_ARM					(1 << 19)
 #define EXYNOS5420_EMULATION					(1 << 31)
+#define EXYNOS5422_POWER_GATE_CTRL				(1 << 15)
 #define ATB_ISP_ARM						(1 << 12)
 #define ATB_KFC							(1 << 13)
 #define ATB_NOC							(1 << 14)

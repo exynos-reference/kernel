@@ -601,7 +601,7 @@ void exynos_sys_powerdown_conf(enum sys_powerdown mode)
 	if (soc_is_exynos5250())
 		exynos5_init_pmu();
 
-	if (soc_is_exynos5420())
+	if (soc_is_exynos5420() || soc_is_exynos5800())
 		exynos_set_core_flag();
 
 	for (i = 0; (exynos_pmu_config[i].reg != PMU_TABLE_END) ; i++)
@@ -660,7 +660,7 @@ static int __init exynos_pmu_init(void)
 
 		exynos_pmu_config = exynos5250_pmu_config;
 		pr_info("EXYNOS5250 PMU Initialize\n");
-	} else if (soc_is_exynos5420()) {
+	} else if (soc_is_exynos5420() || soc_is_exynos5800()) {
 		/*
 		 * Set the CMU_RESET, CMU_SYSCLK and CMU_CLKSTOP registers
 		 * for local power blocks to Low initially as per Table 8-4:
@@ -692,6 +692,8 @@ static int __init exynos_pmu_init(void)
 		 */
 		value = __raw_readl(EXYNOS5420_LPI_MASK);
 		value |= EXYNOS5420_ATB_ISP_ARM;
+		if (soc_is_exynos5800())
+			value |= EXYNOS5422_POWER_GATE_CTRL;
 		__raw_writel(value, EXYNOS5420_LPI_MASK);
 		value = __raw_readl(EXYNOS5420_LPI_MASK1);
 		value |= EXYNOS5420_ATB_KFC;
