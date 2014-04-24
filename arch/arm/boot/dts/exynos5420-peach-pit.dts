@@ -499,6 +499,16 @@
 		pinctrl-names = "default";
 		pinctrl-0 = <&max98090_irq>;
 	};
+
+	ps8625-bridge@48 {
+		compatible = "parade,ps8625";
+		reg = <0x48>;
+		sleep-gpio = <&gpx3 5 0>;
+		reset-gpio = <&gpy7 7 0>;
+		lane-count = <2>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&ps8625_sleep &ps8625_reset>;
+	};
 };
 
 &hsi2c_9 {
@@ -637,6 +647,20 @@
 
 	pmic_dvs_1: pmic-dvs-1 {
 		samsung,pins = "gpy7-6";
+		samsung,pin-function = <1>;
+		samsung,pin-pud = <0>;
+		samsung,pin-drv = <0>;
+	};
+
+	ps8625_sleep: ps8625-sleep {
+		samsung,pins = "gpx3-5";
+		samsung,pin-function = <1>;
+		samsung,pin-pud = <0>;
+		samsung,pin-drv = <0>;
+	};
+
+	ps8625_reset: ps8625-reset {
+		samsung,pins = "gpy7-7";
 		samsung,pin-function = <1>;
 		samsung,pin-pud = <0>;
 		samsung,pin-drv = <0>;
