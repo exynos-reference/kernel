@@ -37,7 +37,7 @@
 
 #define PPMU_BEVT0SEL		0x1000
 #define PPMU_BEVTSEL_OFFSET	0x100
-#define PPMU_BEVTSEL(x)		(PPMU_BEVT0SEL + (ch * PPMU_BEVTSEL_OFFSET))
+#define PPMU_BEVTSEL(ch)	(PPMU_BEVT0SEL + (ch * PPMU_BEVTSEL_OFFSET))
 
 /* For Event Selection */
 #define RD_DATA_COUNT		0x5
