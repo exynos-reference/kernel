@@ -1087,4 +1087,11 @@
 		clock-names = "sysmmu", "master";
 		clocks = <&clock CLK_SMMU_JPEG>, <&clock CLK_JPEG2>;
 	};
+
+	ppmu {
+		compatible = "samsung,exynos5420-int-busfreq";
+		reg = <0x10D00000 0x2000	/* PPMU_DMC_0_0 */
+		       0x10D10000 0x2000	/* PPMU_DMC_0_1 */
+		       0x10D60000 0x2000>;	/* PPMU_DMC_1_0 */
+	};
 };
