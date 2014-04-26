@@ -1039,4 +1039,12 @@
 		clock-names = "sysmmu", "master";
 		clocks = <&clock CLK_SMMU_MDMA1>, <&clock CLK_MDMA1>;
 	};
+
+	ppmu {
+		compatible = "samsung,exynos5250-int-busfreq";
+	            reg = <0x10C40000 0x2000	/* PPMU_DDR_C */
+			   0x10C50000 0x2000	/* PPMU_DDR_L */
+			   0x10CB0000 0x2000	/* PPMU_DDR_R */
+			   0x13660000 0x2000>;	/* PPMU_RIGHT */
+	};
 };

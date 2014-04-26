@@ -1,0 +1,27 @@
+Exynos PPMU driver
+-------------------
+
+Performance events are primitive values used to get performance data. These
+events provide information about the behavior of the SoC that can be used
+when analyzing system performance. These events are made visible using the
+PPMU logic.
+Exynos PPMU driver is used by the exynos5 devfreq drivers to control the
+bus frequency/voltage.
+
+Required properties:
+- compatible: "samsung,exynos5250-int-busfreq", "samsung,exynos5420-int-busfreq"
+- reg:
+	* physical base address of the PPMUs (e.g DDR, Right Bus, Left bus etc)
+	and length of memory mapped region.
+
+Example:
+--------
+
+	ppmu {
+		compatible = "samsung,exynos5250-int-busfreq";
+		reg = <0x10C40000 0x2000
+		       0x10C50000 0x2000
+		       0x10C60000 0x2000
+		       0x10CB0000 0x2000
+		       0x13660000 0x2000>;
+	};
