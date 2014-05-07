@@ -141,9 +141,29 @@
 		regulator-boot-on;
 		regulator-always-on;
 	};
+
+	/* We need GPX0_6 to be low at sleep time; just keep it low always */
+	mask_tpm_reset_regulator: mask-tpm-reset-regulator {
+	compatible = "regulator-fixed";
+	regulator-name = "mask-tpm-reset ";
+		gpio = <&gpx0 6 0>;
+		enable-active-low;
+		regulator-boot-on;
+		regulator-always-on;
+		pinctrl-names = "default";
+		pinctrl-0 = <&mask_tpm_reset>;
+	};
 };
 
 &pinctrl_0 {
+
+	mask_tpm_reset: mask-tpm-reset {
+		samsung,pins = "gpx0-6";
+		samsung,pin-function = <1>;
+		samsung,pin-pud = <0>;
+		samsung,pin-drv = <0>;
+	};
+
 	tpm_irq: tpm-irq {
 		samsung,pins = "gpx1-0";
 		samsung,pin-function = <0>;
