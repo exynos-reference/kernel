@@ -226,6 +226,11 @@ PNAME(mout_aclk200_p)	= { "mout_mpll_user", "mout_bpll_user" };
 PNAME(mout_aclk400_p)	= { "mout_aclk400_g3d_mid", "mout_gpll" };
 PNAME(mout_aclk200_sub_p) = { "fin_pll", "div_aclk200" };
 PNAME(mout_aclk266_sub_p) = { "fin_pll", "div_aclk266" };
+PNAME(mout_aclk300_disp1_p) = { "mout_aclk300_disp1_mid",
+				"mout_aclk300_disp1_mid1" };
+PNAME(mout_aclk300_gscl_p) = { "mout_aclk300_gscl_mid",
+				"mout_aclk300_gscl_mid1" };
+PNAME(mout_aclk300_gscl_mid1_p) = { "mout_vpll", "mout_cpll" };
 PNAME(mout_aclk333_sub_p) = { "fin_pll", "div_aclk333" };
 PNAME(mout_aclk400_isp_sub_p) = { "fin_pll", "div_aclk400_isp" };
 PNAME(mout_hdmi_p)	= { "div_hdmi_pixel", "sclk_hdmiphy" };
@@ -304,9 +309,17 @@ static struct samsung_mux_clock exynos5250_mux_clks[] __initdata = {
 	 */
 	MUX(0, "mout_aclk166", mout_aclk166_p, SRC_TOP0, 8, 1),
 	MUX(0, "mout_aclk200", mout_aclk200_p, SRC_TOP0, 12, 1),
+	MUX(0, "mout_aclk300_disp1_mid", mout_aclk200_p, SRC_TOP0, 14, 1),
+	MUX(0, "mout_aclk300_disp1", mout_aclk300_disp1_p, SRC_TOP0, 15, 1),
 	MUX(0, "mout_aclk333", mout_aclk166_p, SRC_TOP0, 16, 1),
 	MUX(0, "mout_aclk400_g3d_mid", mout_aclk200_p, SRC_TOP0, 20, 1),
+	MUX(0, "mout_aclk300_gscl_mid", mout_aclk200_p, SRC_TOP0, 24, 1),
+	MUX(0, "mout_aclk300_gscl", mout_aclk300_gscl_p, SRC_TOP0, 25, 2),
 
+	MUX(0, "mout_aclk300_disp1_mid1", mout_aclk300_gscl_mid1_p,
+					SRC_TOP1, 8, 1),
+	MUX(0, "mout_aclk300_gscl_mid1", mout_aclk300_gscl_mid1_p,
+					SRC_TOP1, 12, 1),
 	MUX(0, "mout_aclk400_isp", mout_aclk200_p, SRC_TOP1, 24, 1),
 	MUX(0, "mout_aclk400_g3d", mout_aclk400_p, SRC_TOP1, 28, 1),
 
@@ -387,13 +400,17 @@ static struct samsung_div_clock exynos5250_div_clks[] __initdata = {
 	 * CMU_TOP
 	 */
 	DIV(0, "div_aclk66", "div_aclk66_pre", DIV_TOP0, 0, 3),
-	DIV(0, "div_aclk166", "mout_aclk166", DIV_TOP0, 8, 3),
-	DIV(0, "div_aclk200", "mout_aclk200", DIV_TOP0, 12, 3),
-	DIV(0, "div_aclk266", "mout_mpll_user", DIV_TOP0, 16, 3),
-	DIV(0, "div_aclk333", "mout_aclk333", DIV_TOP0, 20, 3),
+	DIV_A(0, "div_aclk166", "mout_aclk166", DIV_TOP0, 8, 3, "aclk166_d"),
+	DIV_A(0, "div_aclk200", "mout_aclk200", DIV_TOP0, 12, 3, "aclk200_d"),
+	DIV_A(0, "div_aclk266", "mout_mpll_user", DIV_TOP0, 16, 3, "aclk266_d"),
+	DIV_A(0, "div_aclk333", "mout_aclk333", DIV_TOP0, 20, 3, "aclk333_d"),
 	DIV(0, "div_aclk400_g3d", "mout_aclk400_g3d", DIV_TOP0,
 							24, 3),
+	DIV_A(0, "div_aclk300_disp1", "mout_aclk300_disp1",
+					DIV_TOP0, 28, 3, "aclk300_disp1_d"),
 
+	DIV_A(0, "div_aclk300_gscl", "mout_aclk300_gscl",
+					DIV_TOP1, 12, 3, "aclk300_gscl_d"),
 	DIV(0, "div_aclk400_isp", "mout_aclk400_isp", DIV_TOP1, 20, 3),
 	DIV(0, "div_aclk66_pre", "mout_mpll_user", DIV_TOP1, 24, 3),
 
