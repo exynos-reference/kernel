@@ -350,7 +350,7 @@ static void s5p_mfc_handle_frame(struct s5p_mfc_ctx *ctx,
 	if (dst_frame_status == S5P_FIMV_DEC_STATUS_DECODING_EMPTY) {
 		if (ctx->state == MFCINST_RES_CHANGE_FLUSH) {
 			static const struct v4l2_event ev_src_ch = {
-				.type = V4L2_EVENT_SOURCE_CHANGE,
+				.type = V4L2_EVENT_RESOLUTION_CHANGE,
 				.u.src_change.changes =
 					V4L2_EVENT_SRC_CH_RESOLUTION,
 			};

@@ -342,7 +342,7 @@ static const struct v4l2_subscribed_event_ops v4l2_event_src_ch_ops = {
 int v4l2_src_change_event_subscribe(struct v4l2_fh *fh,
 				const struct v4l2_event_subscription *sub)
 {
-	if (sub->type == V4L2_EVENT_SOURCE_CHANGE)
+	if (sub->type == V4L2_EVENT_RESOLUTION_CHANGE)
 		return v4l2_event_subscribe(fh, sub, 0, &v4l2_event_src_ch_ops);
 	return -EINVAL;
 }
