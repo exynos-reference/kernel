@@ -393,6 +393,42 @@ int phy_power_off(struct phy *phy)
 EXPORT_SYMBOL_GPL(phy_power_off);
 
 /**
+ * phy_calibrate - calibrate a phy post initialization
+ * @phy: Pointer to 'phy' from consumer
+ *
+ * For certain PHYs, it may be needed to calibrate few phy parameters
+ * post initialization. The need to calibrate may arise after the
+ * initialization of consumer itself, in order to prevent further any
+ * loss of phy settings post consumer-initialization.
+ *	example: USB 3.0 DRD PHY on Exynos5420/5800 systems is one such
+ *	phy which needs calibration after the host controller reset
+ *	has happened.
+ */
+int phy_calibrate(struct phy *phy)
+{
+	int ret = -ENOTSUPP;
+
+	if (!phy)
+		return 0;
+
+	mutex_lock(&phy->mutex);
+	if (phy->ops->calibrate) {
+		ret =  phy->ops->calibrate(phy);
+		if (ret < 0) {
+			dev_err(&phy->dev,
+				"phy calibration failed --> %d\n", ret);
+			goto out;
+		}
+	}
+
+out:
+	mutex_unlock(&phy->mutex);
+
+	return ret;
+}
+EXPORT_SYMBOL_GPL(phy_calibrate);
+
+/**
  * _of_phy_get() - lookup and obtain a reference to a phy by phandle
  * @np: device_node for which to get the phy
  * @index: the index of the phy
