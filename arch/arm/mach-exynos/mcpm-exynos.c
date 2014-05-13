@@ -26,6 +26,8 @@
 #define EXYNOS5420_CPUS_PER_CLUSTER	4
 #define EXYNOS5420_NR_CLUSTERS		2
 #define MCPM_BOOT_ADDR_OFFSET		0x1c
+#define REG_START_ADDR_OFFSET		0x28
+#define EXYNOS_START_FLAG		(0x1 << 0)
 
 /*
  * The common v7_exit_coherency_flush API could not be used because of the
@@ -327,6 +329,8 @@ static int __init exynos_mcpm_init(void)
 	 * the PMU SPARE3 register
 	 */
 	__raw_writel(EXYNOS5420_SWRESET_KFC_SEL, S5P_PMU_SPARE3);
+	__raw_writel((__raw_readl(ns_sram_base_addr + REG_START_ADDR_OFFSET)
+		& ~EXYNOS_START_FLAG), ns_sram_base_addr + REG_START_ADDR_OFFSET);
 
 	exynos_mcpm_usage_count_init();
 
