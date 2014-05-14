@@ -794,7 +794,7 @@ static int enc_post_seq_start(struct s5p_mfc_ctx *ctx)
 			vb2_set_plane_payload(dst_mb->b, 0,
 				s5p_mfc_hw_call(dev->mfc_ops, get_enc_strm_size,
 						dev));
-			vb2_buffer_done(dst_mb->b, VB2_BUF_STATE_DONE);
+			ctx->header_mb = dst_mb;
 		}
 		spin_unlock_irqrestore(&dev->irqlock, flags);
 	}
@@ -853,6 +853,10 @@ static int enc_post_frame_start(struct s5p_mfc_ctx *ctx)
 	unsigned int strm_size;
 	unsigned long flags;
 
+	if (ctx->header_mb) {
+		vb2_buffer_done(ctx->header_mb->b, VB2_BUF_STATE_DONE);
+		ctx->header_mb = NULL;
+	}
 	slice_type = s5p_mfc_hw_call(dev->mfc_ops, get_enc_slice_type, dev);
 	strm_size = s5p_mfc_hw_call(dev->mfc_ops, get_enc_strm_size, dev);
 	mfc_debug(2, "Encoded slice type: %d\n", slice_type);

@@ -530,6 +530,7 @@ struct s5p_mfc_codec_ops {
  * @output_state:	state of the output buffers queue
  * @src_bufs:		information on allocated source buffers
  * @dst_bufs:		information on allocated destination buffers
+ * @header_mb:		buffer pointer of the encoded sequence header
  * @sequence:		counter for the sequence number for v4l2
  * @dec_dst_flag:	flags for buffers queued in the hardware
  * @dec_src_buf_size:	size of the buffer for source buffers in decoding
@@ -614,6 +615,7 @@ struct s5p_mfc_ctx {
 	int src_bufs_cnt;
 	struct s5p_mfc_buf dst_bufs[MFC_MAX_BUFFERS];
 	int dst_bufs_cnt;
+	struct s5p_mfc_buf *header_mb;
 
 	unsigned int sequence;
 	unsigned long dec_dst_flag;
