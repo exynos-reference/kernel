@@ -131,6 +131,7 @@
 	pmu_system_controller: system-controller@10020000 {
 		compatible = "samsung,exynos4210-pmu", "syscon";
 		reg = <0x10020000 0x4000>;
+		#clock-cells = <1>;
 	};
 
 	dsi_0: dsi@11C80000 {
