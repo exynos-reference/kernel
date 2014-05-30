@@ -103,8 +103,7 @@ static void __init exynos_clkout_init(struct device_node *node, u32 mux_mask)
 	clkout->clk_table[0] = clk_register_composite(NULL, "clkout",
 				parent_names, parent_count, &clkout->mux.hw,
 				&clk_mux_ops, NULL, NULL, &clkout->gate.hw,
-				&clk_gate_ops, CLK_SET_RATE_PARENT
-				| CLK_SET_RATE_NO_REPARENT);
+				&clk_gate_ops, CLK_SET_RATE_PARENT);
 	if (IS_ERR(clkout->clk_table[0]))
 		goto err_unmap;
 
