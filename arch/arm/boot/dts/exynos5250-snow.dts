@@ -355,6 +355,8 @@
 			reg = <0x11>;
 			pinctrl-0 = <&max98095_en>;
 			pinctrl-names = "default";
+			clocks = <&pmu_system_controller 0>;
+			clock-names = "mclk";
 		};
 
 		ptn3460-bridge@20 {
