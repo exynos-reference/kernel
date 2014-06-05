@@ -87,6 +87,26 @@
 		pinctrl-0 = <&usb301_vbus_en>;
 		enable-active-high;
 	};
+
+	panel_lvds: panel-lvds {
+		compatible = "panel-lvds";
+
+		display-timings {
+			native-mode = <&timing0>;
+
+			timing0: timing@0 {
+				clock-frequency = <70589280>;
+				hactive = <1366>;
+				vactive = <768>;
+				hfront-porch = <40>;
+				hback-porch = <40>;
+				hsync-len = <32>;
+				vback-porch = <10>;
+				vfront-porch = <12>;
+				vsync-len = <6>;
+			};
+		};
+ 	};
 };
 
 &pinctrl_0 {
@@ -268,6 +288,7 @@
 	samsung,link-rate = <0x06>;
 	samsung,lane-count = <2>;
 	samsung,hpd-gpio = <&gpx2 6 0>;
+	edp-panel = <&panel_lvds>;
 
 	display-timings {
 		native-mode = <&timing1>;
