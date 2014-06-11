@@ -1,0 +1,50 @@
+panel interface for eDP/lvds panels
+
+Required properties:
+  - compatible: "panel-lvds"
+
+Optional properties:
+	-lcd-en-gpio:
+		panel LCD poweron GPIO.
+			Indicates which GPIO needs to be powered up as output
+			to powerup/enable the switch to the LCD panel.
+	-led-en-gpio:
+		panel LED enable GPIO.
+			Indicates which GPIO needs to be powered up as output
+			to enable the backlight.
+	-panel-prepare-delay:
+		delay value in ms required for panel_prepare process
+			Delay in ms needed for the panel LCD unit to
+			powerup completely.
+			ex: delay needed till eDP panel throws HPD.
+			    delay needed so that we cans tart reading edid.
+	-panel-enable-delay:
+		delay value in ms required for panel_enable process
+			Delay in ms needed for the panel backlight/LED unit
+			to powerup, and delay needed between video_enable and
+			backlight_enable.
+	-panel-disable-delay:
+		delay value in ms required for panel_disable process
+			Delay in ms needed for the panel backlight/LED unit
+			powerdown, and delay needed between backlight_disable
+			and video_disable.
+	-panel-unprepare-delay:
+		delay value in ms required for panel_post_disable process
+			Delay in ms needed for the panel LCD unit to
+			to powerdown completely, and the minimum delay needed
+			before powering it on again.
+	-panel-width-mm: physical panel width [mm]
+	-panel-height-mm: physical panel height [mm]
+
+Example:
+
+	panel-lvds {
+		compatible = "panel-lvds";
+		led-en-gpio = <&gpx3 0 1>;
+		panel-prepare-delay = <40>;
+		panel-enable-delay = <20>;
+		panel-disable-delay = <20>;
+		panel-unprepare-delay = <30>;
+		panel-width-mm = <256>;
+		panel-height-mm = <144>;
+	};
