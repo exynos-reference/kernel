@@ -51,6 +51,8 @@ Required properties for dp-controller:
 			LANE_COUNT1 = 1, LANE_COUNT2 = 2, LANE_COUNT4 = 4
 	- display-timings: timings for the connected panel as described by
 		Documentation/devicetree/bindings/video/display-timing.txt
+	-edp-panel:
+		phandle for the edp/lvds drm_panel node.
 
 Optional properties for dp-controller:
 	-interlaced:
