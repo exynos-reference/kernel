@@ -3,3 +3,10 @@ config DRM_PTN3460
 	depends on DRM
 	select DRM_KMS_HELPER
 	---help---
+
+config DRM_PANEL_BINDER
+	tristate "bridge panel binder"
+	depends on DRM
+	select DRM_KMS_HELPER
+	select DRM_PANEL
+	---help---
