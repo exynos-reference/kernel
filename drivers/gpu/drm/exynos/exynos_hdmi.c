@@ -83,8 +83,8 @@ struct hdmi_resources {
 	struct clk			*sclk_pixel;
 	struct clk			*sclk_hdmiphy;
 	struct clk			*mout_hdmi;
-	struct regulator_bulk_data	*regul_bulk;
 	struct regulator		*reg_hdmi_en;
+	struct regulator		**regulators;
 	int				regul_count;
 };
 
@@ -2029,6 +2029,36 @@ static void hdmi_commit(struct exynos_drm_display *display)
 	hdmi_conf_apply(hdata);
 }
 
+int hdmi_regulator_enable(struct hdmi_context *hdata)
+{
+	struct hdmi_resources *res = &hdata->res;
+	int i, ret;
+
+	for (i = 0; i < res->regul_count; ++i) {
+		ret = regulator_enable(res->regulators[i]);
+		if (ret < 0) {
+			DRM_ERROR("fail to enable regulators.\n");
+			return ret;
+		}
+	}
+	return 0;
+}
+
+int hdmi_regulator_disable(struct hdmi_context *hdata)
+{
+	struct hdmi_resources *res = &hdata->res;
+	int i, ret;
+
+	for (i = 0; i < res->regul_count; ++i) {
+		ret = regulator_disable(res->regulators[i]);
+		if (ret < 0) {
+			DRM_ERROR("fail to disable regulators.\n");
+			return ret;
+		}
+	}
+	return 0;
+}
+
 static void hdmi_poweron(struct exynos_drm_display *display)
 {
 	struct hdmi_context *hdata = display->ctx;
@@ -2046,8 +2076,8 @@ static void hdmi_poweron(struct exynos_drm_display *display)
 
 	pm_runtime_get_sync(hdata->dev);
 
-	if (regulator_bulk_enable(res->regul_count, res->regul_bulk))
-		DRM_DEBUG_KMS("failed to enable regulator bulk\n");
+	if (hdmi_regulator_enable(hdata))
+		DRM_DEBUG_KMS("failed to enable regulators\n");
 
 	/* set pmu hdmiphy control bit to enable hdmiphy */
 	regmap_update_bits(hdata->pmureg, PMU_HDMI_PHY_CONTROL,
@@ -2084,7 +2114,8 @@ static void hdmi_poweroff(struct exynos_drm_display *display)
 	regmap_update_bits(hdata->pmureg, PMU_HDMI_PHY_CONTROL,
 			PMU_HDMI_PHY_ENABLE_BIT, 0);
 
-	regulator_bulk_disable(res->regul_count, res->regul_bulk);
+	if (hdmi_regulator_disable(hdata))
+		DRM_DEBUG_KMS("failed to disable regulators\n");
 
 	pm_runtime_put_sync(hdata->dev);
 
@@ -2217,22 +2248,22 @@ static int hdmi_resources_init(struct hdmi_context *hdata)
 
 	clk_set_parent(res->mout_hdmi, res->sclk_pixel);
 
-	res->regul_bulk = devm_kzalloc(dev, ARRAY_SIZE(supply) *
-		sizeof(res->regul_bulk[0]), GFP_KERNEL);
-	if (!res->regul_bulk) {
-		ret = -ENOMEM;
-		goto fail;
-	}
-	for (i = 0; i < ARRAY_SIZE(supply); ++i) {
-		res->regul_bulk[i].supply = supply[i];
-		res->regul_bulk[i].consumer = NULL;
-	}
-	ret = devm_regulator_bulk_get(dev, ARRAY_SIZE(supply), res->regul_bulk);
-	if (ret) {
-		DRM_ERROR("failed to get regulators\n");
-		return ret;
-	}
 	res->regul_count = ARRAY_SIZE(supply);
+
+	res->regulators = devm_kzalloc(dev, res->regul_count *
+		sizeof(res->regulators[0]), GFP_KERNEL);
+	if (!res->regulators)
+		return -ENOMEM;
+
+	for (i = 0; i < ARRAY_SIZE(supply); ++i) {
+		res->regulators[i] =
+			devm_regulator_get_optional(dev, supply[i]);
+		if (IS_ERR(res->regulators[i])) {
+			DRM_ERROR("fail to get regulator: %s.\n",
+				supply[i]);
+			return PTR_ERR(res->regulators[i]);
+		}
+	}
 
 	res->reg_hdmi_en = devm_regulator_get(dev, "hdmi-en");
 	if (IS_ERR(res->reg_hdmi_en) && PTR_ERR(res->reg_hdmi_en) != -ENOENT) {
@@ -2248,7 +2279,7 @@ static int hdmi_resources_init(struct hdmi_context *hdata)
 	} else
 		res->reg_hdmi_en = NULL;
 
-	return ret;
+	return 0;
 fail:
 	DRM_ERROR("HDMI resource init - failed\n");
 	return ret;
