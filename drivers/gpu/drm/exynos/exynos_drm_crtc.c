@@ -167,6 +167,12 @@ static int exynos_drm_crtc_mode_set_commit(struct drm_crtc *crtc, int x, int y,
 		return -EPERM;
 	}
 
+	/* when framebuffer is removed, commit should not proceed. */
+	if(!plane->fb){
+		DRM_ERROR("framebuffer has been removed from plane.\n");
+		return -EFAULT;
+	}
+
 	crtc_w = crtc->primary->fb->width - x;
 	crtc_h = crtc->primary->fb->height - y;
 
