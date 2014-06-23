@@ -2083,9 +2083,6 @@ static void hdmi_poweron(struct exynos_drm_display *display)
 	regmap_update_bits(hdata->pmureg, PMU_HDMI_PHY_CONTROL,
 			PMU_HDMI_PHY_ENABLE_BIT, 1);
 
-	clk_prepare_enable(res->hdmi);
-	clk_prepare_enable(res->sclk_hdmi);
-
 	hdmiphy_poweron(hdata);
 	hdmi_commit(display);
 }
@@ -2106,9 +2103,6 @@ static void hdmi_poweroff(struct exynos_drm_display *display)
 	hdmiphy_poweroff(hdata);
 
 	cancel_delayed_work(&hdata->hotplug_work);
-
-	clk_disable_unprepare(res->sclk_hdmi);
-	clk_disable_unprepare(res->hdmi);
 
 	/* reset pmu hdmiphy control bit to disable hdmiphy */
 	regmap_update_bits(hdata->pmureg, PMU_HDMI_PHY_CONTROL,
@@ -2247,6 +2241,9 @@ static int hdmi_resources_init(struct hdmi_context *hdata)
 	}
 
 	clk_set_parent(res->mout_hdmi, res->sclk_pixel);
+
+	clk_prepare_enable(res->hdmi);
+	clk_prepare_enable(res->sclk_hdmi);
 
 	res->regul_count = ARRAY_SIZE(supply);
 
