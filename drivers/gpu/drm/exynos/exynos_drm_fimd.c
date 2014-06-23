@@ -72,6 +72,7 @@ struct fimd_driver_data {
 	unsigned int has_shadowcon:1;
 	unsigned int has_clksel:1;
 	unsigned int has_limited_fmt:1;
+	unsigned int has_dp_clkcon:1;
 };
 
 static struct fimd_driver_data s3c64xx_fimd_driver_data = {
@@ -88,6 +89,7 @@ static struct fimd_driver_data exynos4_fimd_driver_data = {
 static struct fimd_driver_data exynos5_fimd_driver_data = {
 	.timing_base = 0x20000,
 	.has_shadowcon = 1,
+	.has_dp_clkcon = 1,
 };
 
 struct fimd_win_data {
@@ -330,6 +332,9 @@ static void fimd_commit(struct exynos_drm_manager *mgr)
 	clkdiv = fimd_calc_clkdiv(ctx, mode);
 	if (clkdiv > 1)
 		val |= VIDCON0_CLKVAL_F(clkdiv - 1) | VIDCON0_CLKDIR;
+
+	if (ctx->driver_data->has_dp_clkcon)
+		writel(DP_CLK_ENABLE, ctx->regs + DP_CLKCON);
 
 	writel(val, ctx->regs + VIDCON0);
 }
