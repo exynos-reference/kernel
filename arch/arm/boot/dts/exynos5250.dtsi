@@ -100,11 +100,6 @@
 		reg = <0x10044040 0x20>;
 	};
 
-	pd_disp1: disp1-power-domain@0x100440A0 {
-		compatible = "samsung,exynos4210-pd";
-		reg = <0x100440A0 0x20>;
-	};
-
 	clock: clock-controller@10010000 {
 		compatible = "samsung,exynos5250-clock";
 		reg = <0x10010000 0x30000>;
@@ -1000,7 +995,6 @@
 		interrupts = <3 2>;
 		clock-names = "sysmmu";
 		clocks = <&clock CLK_SMMU_FIMD1>;
-		samsung,power-domain = <&pd_disp1>;
 		mmu-masters = <&fimd>;
 	};
 
@@ -1011,7 +1005,6 @@
 		interrupts = <7 4>;
 		clock-names = "sysmmu";
 		clocks = <&clock CLK_SMMU_TV>;
-		samsung,power-domain = <&pd_disp1>;
 		mmu-masters = <&mixer>;
 	};
 
