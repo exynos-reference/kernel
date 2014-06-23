@@ -316,7 +316,7 @@
 	status = "okay";
 	num-slots = <1>;
 	broken-cd;
-	caps2-mmc-hs200-1_8v;
+	mmc-hs200-1_8v;
 	supports-highspeed;
 	non-removable;
 	card-detect-delay = <200>;
