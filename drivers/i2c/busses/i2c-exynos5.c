@@ -645,7 +645,7 @@ static int exynos5_i2c_xfer(struct i2c_adapter *adap,
 
 static u32 exynos5_i2c_func(struct i2c_adapter *adap)
 {
-	return I2C_FUNC_I2C | (I2C_FUNC_SMBUS_EMUL & ~I2C_FUNC_SMBUS_QUICK);
+	return I2C_FUNC_I2C | (I2C_FUNC_SMBUS_EMUL );
 }
 
 static const struct i2c_algorithm exynos5_i2c_algorithm = {
