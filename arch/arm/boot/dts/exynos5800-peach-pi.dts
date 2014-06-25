@@ -81,7 +81,8 @@
 
 	lvds_panel: lvds-panel {
 		compatible = "panel-lvds";
-		panel-enable-delay = <105>;
+		panel-prepare-delay = <105>;
+		panel-enable-delay = <20>;
 		panel-disable-delay = <50>;
 		led-en-gpio = <&gpx2 2 0>;
 		pinctrl-0 = <&dp_backlight_en>;
@@ -359,22 +360,6 @@
 	samsung,lane-count = <2>;
 	samsung,hpd-gpio = <&gpx2 6 0>;
 	edp-panel = <&lvds_panel>;
-
-	display-timings {
-		native-mode = <&timing1>;
-
-		timing1: timing@1 {
-			clock-frequency = <150660000>;
-			hactive = <1920>;
-			vactive = <1080>;
-			hfront-porch = <60>;
-			hback-porch = <172>;
-			hsync-len = <80>;
-			vback-porch = <25>;
-			vfront-porch = <10>;
-			vsync-len = <10>;
-		};
-	};
 };
 
 &fimd {
