@@ -384,6 +384,7 @@
 
 	fimd@14400000 {
 		status = "okay";
+		samsung,output-type = <2>;
 		display-timings {
 			native-mode = <&timing0>;
 			timing0: timing@0 {
