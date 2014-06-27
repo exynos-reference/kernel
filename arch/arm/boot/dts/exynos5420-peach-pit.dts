@@ -132,6 +132,7 @@
 &fimd {
 	status = "okay";
 	samsung,invert-vclk;
+	samsung,output-type = <2>;
 };
 
 &hdmi {
