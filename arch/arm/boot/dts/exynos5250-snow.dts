@@ -323,6 +323,7 @@
 	fimd@14400000 {
 		status = "okay";
 		samsung,invert-vclk;
+		samsung,output-type = <2>;
 	};
 
 	panel: panel-simple {
