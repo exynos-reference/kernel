@@ -95,6 +95,7 @@ struct fimd_driver_data {
 	unsigned int has_shadowcon:1;
 	unsigned int has_clksel:1;
 	unsigned int has_limited_fmt:1;
+	unsigned int has_dp_clkcon:1;
 	unsigned int has_vidoutcon:1;
 };
 
@@ -110,6 +111,13 @@ static struct fimd_driver_data exynos4_fimd_driver_data = {
 	.lcdblk_vt_shift = 10,
 	.lcdblk_bypass_shift = 1,
 	.has_shadowcon = 1,
+	.has_dp_clkcon = 1,
+};
+
+enum exynos_fimd_output_type {
+	EXYNOS_FIMD_OUTPUT_DPI,
+	EXYNOS_FIMD_OUTPUT_DSI,
+	EXYNOS_FIMD_OUTPUT_DP,
 };
 
 static struct fimd_driver_data exynos5_fimd_driver_data = {
@@ -163,6 +171,8 @@ struct fimd_context {
 	struct exynos_drm_panel_info panel;
 	struct fimd_driver_data *driver_data;
 	struct exynos_drm_display *display;
+
+	enum exynos_fimd_output_type exynos_fimd_output_type;
 };
 
 static const struct of_device_id fimd_driver_dt_match[] = {
@@ -409,6 +419,10 @@ static void fimd_commit(struct exynos_drm_manager *mgr)
 	clkdiv = fimd_calc_clkdiv(ctx, mode);
 	if (clkdiv > 1)
 		val |= VIDCON0_CLKVAL_F(clkdiv - 1) | VIDCON0_CLKDIR;
+
+	if (ctx->driver_data->has_dp_clkcon &&
+		ctx->exynos_fimd_output_type == EXYNOS_FIMD_OUTPUT_DP)
+		writel(DP_CLK_ENABLE, ctx->regs + DP_CLKCON);
 
 	writel(val, ctx->regs + VIDCON0);
 }
@@ -1074,6 +1088,7 @@ static int fimd_probe(struct platform_device *pdev)
 	struct fimd_context *ctx;
 	struct device_node *i80_if_timings;
 	struct resource *res;
+	u32 fimd_output_type;
 	int ret = -EINVAL;
 
 	ret = exynos_drm_component_add(&pdev->dev, EXYNOS_DEVICE_TYPE_CRTC,
@@ -1100,6 +1115,14 @@ static int fimd_probe(struct platform_device *pdev)
 		ctx->vidcon1 |= VIDCON1_INV_VDEN;
 	if (of_property_read_bool(dev->of_node, "samsung,invert-vclk"))
 		ctx->vidcon1 |= VIDCON1_INV_VCLK;
+	if (!of_property_read_u32(dev->of_node, "samsung,output-type",
+				&fimd_output_type)) {
+		if ((fimd_output_type < EXYNOS_FIMD_OUTPUT_DPI) ||
+		    (fimd_output_type > EXYNOS_FIMD_OUTPUT_DP))
+			dev_err(dev, "invalid output type for FIMD\n");
+		else
+			ctx->exynos_fimd_output_type = fimd_output_type;
+	}
 
 	i80_if_timings = of_get_child_by_name(dev->of_node, "i80-if-timings");
 	if (i80_if_timings) {
