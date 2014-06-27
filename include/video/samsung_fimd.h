@@ -436,6 +436,10 @@
 #define BLENDCON_NEW_8BIT_ALPHA_VALUE		(1 << 0)
 #define BLENDCON_NEW_4BIT_ALPHA_VALUE		(0 << 0)
 
+/* Video clock enable for DP */
+#define DP_CLKCON				0x27C
+#define DP_CLK_ENABLE				0x2
+
 /* Notes on per-window bpp settings
  *
  * Value	Win0	 Win1	  Win2	   Win3	    Win 4
