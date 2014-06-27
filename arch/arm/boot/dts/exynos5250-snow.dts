@@ -312,6 +312,7 @@
 	fimd@14400000 {
 		status = "okay";
 		samsung,invert-vclk;
+		samsung,output-type = <2>;
 	};
 
 	dp-controller@145B0000 {
