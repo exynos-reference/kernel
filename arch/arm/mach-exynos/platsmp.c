@@ -43,6 +43,17 @@ extern void exynos4_secondary_startup(void);
  */
 void exynos_cpu_power_down(int cpu)
 {
+	if ((soc_is_exynos5420() || soc_is_exynos5800()) && cpu == 0) {
+		/*
+		 * Bypass power down for CPU0 during suspend. Check for
+		 * the SYS_PWR_REG value to decide if we are suspending
+		 * the system.
+		 */
+		int val = __raw_readl(pmu_base_addr +
+				EXYNOS5_ARM_CORE0_SYS_PWR_REG);
+		if (!(val & S5P_CORE_LOCAL_PWR_EN))
+			return;
+	}
 	pmu_raw_writel(0, EXYNOS_ARM_CORE_CONFIGURATION(cpu));
 }
 
