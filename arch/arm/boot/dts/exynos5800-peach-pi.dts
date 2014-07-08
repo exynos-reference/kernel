@@ -98,6 +98,30 @@
 		regulator-boot-on;
 		regulator-always-on;
 	};
+
+	lvds_panel: lvds-panel {
+		compatible = "panel-lvds";
+		panel-prepare-delay = <105>;
+		panel-unprepare-delay = <50>;
+		led-en-gpio = <&gpx2 2 0>;
+		pinctrl-0 = <&dp_backlight_en>;
+
+		display-timings {
+			native-mode = <&timing0>;
+
+			timing0: timing@0 {
+				clock-frequency = <150660000>;
+				hactive = <1920>;
+				vactive = <1080>;
+				hfront-porch = <60>;
+				hback-porch = <172>;
+				hsync-len = <80>;
+				vback-porch = <25>;
+				vfront-porch = <10>;
+				vsync-len = <10>;
+			};
+		};
+	};
 };
 
 &adc {
@@ -116,22 +140,7 @@
 	samsung,link-rate = <0x0a>;
 	samsung,lane-count = <2>;
 	samsung,hpd-gpio = <&gpx2 6 0>;
-
-	display-timings {
-		native-mode = <&timing1>;
-
-		timing1: timing@1 {
-			clock-frequency = <150660000>;
-			hactive = <1920>;
-			vactive = <1080>;
-			hfront-porch = <60>;
-			hback-porch = <172>;
-			hsync-len = <80>;
-			vback-porch = <25>;
-			vfront-porch = <10>;
-			vsync-len = <10>;
-		};
-	};
+	edp-panel = <&lvds_panel>;
 };
 
 &fimd {
@@ -630,6 +639,13 @@
 
 	pmic_dvs_1: pmic-dvs-1 {
 		samsung,pins = "gpy7-6";
+		samsung,pin-function = <1>;
+		samsung,pin-pud = <0>;
+		samsung,pin-drv = <0>;
+	};
+
+	dp_backlight_en: backlight-en {
+		samsung,pins = "gpx2-2";
 		samsung,pin-function = <1>;
 		samsung,pin-pud = <0>;
 		samsung,pin-drv = <0>;
