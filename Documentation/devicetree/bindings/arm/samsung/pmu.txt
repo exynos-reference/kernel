@@ -8,6 +8,7 @@ Properties:
 		   - "samsung,exynos4412-pmu" - for Exynos4412 SoC,
 		   - "samsung,exynos5250-pmu" - for Exynos5250 SoC,
 		   - "samsung,exynos5420-pmu" - for Exynos5420 SoC.
+		   - "samsung,exynos5800-pmu" - for Exynos5800 SoC.
 		second value must be always "syscon".
 
  - reg : offset and length of the register set.
