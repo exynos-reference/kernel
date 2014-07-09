@@ -60,19 +60,32 @@ static void __gsc_m2m_job_abort(struct gsc_ctx *ctx)
 static int gsc_m2m_start_streaming(struct vb2_queue *q, unsigned int count)
 {
 	struct gsc_ctx *ctx = q->drv_priv;
+	struct gsc_dev *gsc = ctx->gsc_dev;
 	int ret;
 
+	ret = clk_enable(gsc->clock);
+	if (ret)
+		return ret;
+
 	ret = pm_runtime_get_sync(&ctx->gsc_dev->pdev->dev);
+
+	if (!pm_runtime_enabled(&gsc->pdev->dev)) {
+		gsc_hw_set_sw_reset(gsc);
+		gsc_wait_reset(gsc);
+	}
+
 	return ret > 0 ? 0 : ret;
 }
 
 static void gsc_m2m_stop_streaming(struct vb2_queue *q)
 {
 	struct gsc_ctx *ctx = q->drv_priv;
+	struct gsc_dev *gsc = ctx->gsc_dev;
 
 	__gsc_m2m_job_abort(ctx);
 
 	pm_runtime_put(&ctx->gsc_dev->pdev->dev);
+	clk_disable(gsc->clock);
 }
 
 void gsc_m2m_job_finish(struct gsc_ctx *ctx, int vb_state)
