@@ -807,6 +807,9 @@ static struct of_device_id exynos_pmu_of_device_ids[] = {
 	}, {
 		.compatible = "samsung,exynos5420-pmu",
 		.data = (void *)&exynos5420_pm_data,
+	}, {
+		.compatible = "samsung,exynos5800-pmu",
+		.data = (void *)&exynos5420_pm_data,
 	},
 	{ /*sentinel*/ },
 };
