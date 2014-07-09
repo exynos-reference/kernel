@@ -556,5 +556,6 @@ static inline unsigned int exynos_pmu_cpunr(unsigned int mpidr)
 					 | EXYNOS5420_KFC_USE_STANDBY_WFI1  \
 					 | EXYNOS5420_KFC_USE_STANDBY_WFI2  \
 					 | EXYNOS5420_KFC_USE_STANDBY_WFI3)
-
+/* for exynos5800 only */
+#define EXYNOS5800_POWER_GATE_CTRL                              (1 << 15)
 #endif /* __ASM_ARCH_REGS_PMU_H */
