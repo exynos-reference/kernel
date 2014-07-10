@@ -283,7 +283,7 @@ static int exynos_adc_probe(struct platform_device *pdev)
 		return PTR_ERR(info->regs);
 
 	mem = platform_get_resource(pdev, IORESOURCE_MEM, 1);
-	info->enable_reg = devm_ioremap_resource(&pdev->dev, mem);
+	info->enable_reg = devm_ioremap(&pdev->dev, mem->start, resource_size(mem));
 	if (IS_ERR(info->enable_reg))
 		return PTR_ERR(info->enable_reg);
 
