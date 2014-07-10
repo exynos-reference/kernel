@@ -72,7 +72,7 @@ static int exynos_dp_video_phy_probe(struct platform_device *pdev)
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 
-	state->regs = devm_ioremap_resource(dev, res);
+	state->regs = devm_ioremap(dev, res->start, resource_size(res));
 	if (IS_ERR(state->regs))
 		return PTR_ERR(state->regs);
 
