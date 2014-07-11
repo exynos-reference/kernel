@@ -2202,6 +2202,7 @@ int hcd_bus_resume(struct usb_device *rhdev, pm_message_t msg)
 	struct usb_hcd	*hcd = container_of(rhdev->bus, struct usb_hcd, self);
 	int		status;
 	int		old_state = hcd->state;
+	int		ret;
 
 	dev_dbg(&rhdev->dev, "usb %sresume\n",
 			(PMSG_IS_AUTO(msg) ? "auto-" : ""));
@@ -2216,6 +2217,17 @@ int hcd_bus_resume(struct usb_device *rhdev, pm_message_t msg)
 
 	hcd->state = HC_STATE_RESUMING;
 	status = hcd->driver->bus_resume(hcd);
+
+	/* calibrate the phy here */
+	if (!IS_ERR(hcd->gen_phy)) {
+		ret = phy_calibrate(hcd->gen_phy);
+		if (ret < 0 && ret != -ENOTSUPP) {
+			dev_err(hcd->self.controller,
+				"failed to calibrate USB PHY\n");
+			return ret;
+		}
+	}
+
 	clear_bit(HCD_FLAG_WAKEUP_PENDING, &hcd->flags);
 	if (status == 0) {
 		struct usb_device *udev;
@@ -2737,6 +2749,16 @@ int usb_add_hcd(struct usb_hcd *hcd,
 		goto err_hcd_driver_setup;
 	}
 	hcd->rh_pollable = 1;
+
+	/* calibrate the phy here */
+	if (!IS_ERR(hcd->gen_phy)) {
+		retval = phy_calibrate(hcd->gen_phy);
+		if (retval < 0 && retval != -ENOTSUPP) {
+			dev_err(hcd->self.controller,
+				"failed to calibrate USB PHY\n");
+			return retval;
+		}
+	}
 
 	/* NOTE: root hub and controller capabilities may not be the same */
 	if (device_can_wakeup(hcd->self.controller)
