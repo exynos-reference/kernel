@@ -2953,11 +2953,24 @@ static struct platform_driver kbase_platform_driver = {
 };
 
 /*
- * The driver will not provide a shortcut to create the Mali platform device
+ * The deiver will not provide a shortnut to create the Mali platform device
  * anymore when using Device Tree.
  */
 #ifdef CONFIG_OF
-module_platform_driver(kbase_platform_driver);
+//module_platform_driver(kbase_platform_driver);
+
+static int __init kbase_init(void)
+{
+       return platform_driver_register(&kbase_platform_driver);
+}
+late_initcall(kbase_init);
+
+static void __exit kbase_exit(void)
+{
+       platform_driver_unregister(&kbase_platform_driver);
+}
+module_exit(kbase_exit);
+
 #else /* CONFIG_MALI_PLATFORM_FAKE */
 
 extern int kbase_platform_early_init(void);
@@ -2997,7 +3010,7 @@ static void __exit kbase_driver_exit(void)
 #endif
 }
 
-module_init(kbase_driver_init);
+late_initcall(kbase_driver_init);
 module_exit(kbase_driver_exit);
 
 #endif /* CONFIG_OF */

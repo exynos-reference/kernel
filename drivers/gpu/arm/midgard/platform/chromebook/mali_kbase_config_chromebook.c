@@ -38,7 +38,6 @@
 #include <mach/regs-clock.h>
 //#include <mach/pmu.h>
 #include <mach/common.h>
-#include <mach/regs-pmu.h>
 #include <asm/delay.h>
 #include <mach/map.h>
 #include <generated/autoconf.h>
@@ -63,6 +62,8 @@
 #include <mali_kbase_defs.h>
 
 #include "mali_linux_dvfs_trace.h"
+extern void __iomem *pmu_base_addr;
+//#include "arch/arm/mach-exynos/common.h"
 
 #define MALI_DVFS_DEBUG 0
 #define MALI_DVFS_STEP 8
@@ -86,6 +87,8 @@
 #define CONFIG_MIDGARD_HWVER_R0P0 1
 #define G3D_ASV_VOL_OFFSET	25000
 
+#define pmu_raw_writel(val, offset) \
+		__raw_writel(val, pmu_base_addr + offset)
 struct regulator *kbase_platform_get_regulator(void);
 int kbase_platform_regulator_init(void);
 int kbase_platform_regulator_disable(void);
@@ -98,6 +101,12 @@ static void kbase_platform_dvfs_set_clock(kbase_device *kbdev, int freq);
 static void kbase_platform_dvfs_set_level(kbase_device *kbdev, int level);
 static int kbase_platform_dvfs_get_level(int freq);
 #endif
+
+#define EXYNOS5_G3D_CONFIGURATION 0x4060
+#define EXYNOS5_G3D_STATUS 0x4064
+
+#define EXYNOS5420_G3D_CONFIGURATION 0x4060
+#define EXYNOS5420_G3D_STATUS 0x4064
 
 #if defined(CONFIG_MALI_MIDGARD_DVFS) || defined(CONFIG_MALI_MIDGARD_DEBUG_SYS)
 struct mali_dvfs_info {
@@ -539,12 +548,12 @@ static int kbase_platform_power_clock_init(kbase_device *kbdev)
 
 	/* Turn on G3D power */
 	if (soc_is_exynos5250()) {
-		g3d_status_reg = EXYNOS5_G3D_STATUS;
-		__raw_writel(0x7, EXYNOS5_G3D_CONFIGURATION);
+		g3d_status_reg = pmu_base_addr + EXYNOS5_G3D_STATUS;
+		pmu_raw_writel(0x7, EXYNOS5_G3D_CONFIGURATION);
 	}
 	else if (soc_is_exynos5420() || soc_is_exynos5800()) {
-		g3d_status_reg = EXYNOS5420_G3D_STATUS;
-		__raw_writel(0x7, EXYNOS5420_G3D_CONFIGURATION);
+		g3d_status_reg = pmu_base_addr + EXYNOS5420_G3D_STATUS;
+		pmu_raw_writel(0x7, EXYNOS5_G3D_CONFIGURATION);
 	}
 
 	/* Wait for G3D power stability for 1ms */
@@ -677,12 +686,12 @@ static int kbase_platform_power_on(void)
 
 	/* Turn on G3D power */
 	if (soc_is_exynos5250()) {
-		g3d_status_reg = EXYNOS5_G3D_STATUS;
-		__raw_writel(0x7, EXYNOS5_G3D_CONFIGURATION);
+		g3d_status_reg = pmu_base_addr + EXYNOS5_G3D_STATUS;
+		pmu_raw_writel(0x7, EXYNOS5_G3D_CONFIGURATION);
 	}
 	else if (soc_is_exynos5420() || soc_is_exynos5800()) {
-		g3d_status_reg = EXYNOS5420_G3D_STATUS;
-		__raw_writel(0x7, EXYNOS5420_G3D_CONFIGURATION);
+		g3d_status_reg = pmu_base_addr + EXYNOS5420_G3D_STATUS;
+		pmu_raw_writel(0x7, EXYNOS5420_G3D_CONFIGURATION);
 	}
 
 	/* Wait for G3D power stability */
@@ -710,12 +719,12 @@ static int kbase_platform_power_off(void)
 
 	/* Turn off G3D  */
 	if (soc_is_exynos5250()) {
-		g3d_status_reg = EXYNOS5_G3D_STATUS;
-		__raw_writel(0x0, EXYNOS5_G3D_CONFIGURATION);
+		g3d_status_reg = pmu_base_addr + EXYNOS5_G3D_STATUS;
+		pmu_raw_writel(0x0, EXYNOS5_G3D_CONFIGURATION);
 	}
 	else if (soc_is_exynos5420() || soc_is_exynos5800()) {
-		g3d_status_reg = EXYNOS5420_G3D_STATUS;
-		__raw_writel(0x0, EXYNOS5420_G3D_CONFIGURATION);
+		g3d_status_reg = pmu_base_addr + EXYNOS5420_G3D_STATUS;
+		pmu_raw_writel(0x0, EXYNOS5420_G3D_CONFIGURATION);
 	}
 
 	/* Wait for G3D power stability */
@@ -978,14 +987,14 @@ static void set_clkout_for_3d(void)
 	tmp = 0x0;
 	tmp |= 0x1000B; /* ACLK_400 selected */
 	tmp |= 9 << 8;  /* divided by (9 + 1) */
-	__raw_writel(tmp, /*EXYNOS5_CLKOUT_CMU_TOP*/EXYNOS_CLKREG(0x10A00));
+	__raw_writel(tmp, /*EXYNOS5_CLKOUT_CMU_TOP*/pmu_base_addr + (0x10A00));
 
 #ifdef PMU_XCLKOUT_SET
 	exynos5_pmu_xclkout_set(1, XCLKOUT_CMU_TOP);
 #else /* PMU_XCLKOUT_SET */
 	tmp = 0x0;
 	tmp |= 7 << 8; /* CLKOUT_CMU_TOP selected */
-	__raw_writel(tmp, /*S5P_PMU_DEBUG*/S5P_PMUREG(0x0A00));
+	__raw_writel(tmp, /*S5P_PMU_DEBUG*/pmu_base_addr + (0x0A00));
 #endif /* PMU_XCLKOUT_SET */
 }
 
@@ -1589,7 +1598,7 @@ int kbase_platform_regulator_init(void)
 	{
 		kbase_platform_regulator_disable();
 		printk("[kbase_platform_regulator_init] failed to set mali t6xx operating voltage [%d]\n", mali_gpu_vol);
-		return -1;
+		//return -1;
 	}
 #endif /* CONFIG_REGULATOR */
 
