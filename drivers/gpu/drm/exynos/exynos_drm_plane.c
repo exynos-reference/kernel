@@ -115,12 +115,12 @@ int exynos_plane_mode_set(struct drm_plane *plane, struct drm_crtc *crtc,
 	/* set drm framebuffer data. */
 	overlay->fb_x = src_x;
 	overlay->fb_y = src_y;
-	overlay->fb_width = fb->width;
-	overlay->fb_height = fb->height;
+	overlay->fb_width = min(fb->width, actual_w);
+	overlay->fb_height = min(fb->height, actual_h);
+	overlay->fb_pitch = fb->pitches[0];
 	overlay->src_width = src_w;
 	overlay->src_height = src_h;
 	overlay->bpp = fb->bits_per_pixel;
-	overlay->pitch = fb->pitches[0];
 	overlay->pixel_format = fb->pixel_format;
 
 	/* set overlay range to be displayed. */

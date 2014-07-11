@@ -110,7 +110,7 @@ struct exynos_drm_overlay {
 	unsigned int refresh;
 	unsigned int scan_flag;
 	unsigned int bpp;
-	unsigned int pitch;
+	unsigned int fb_pitch;
 	uint32_t pixel_format;
 	dma_addr_t dma_addr[MAX_FB_BUFFER];
 	int zpos;

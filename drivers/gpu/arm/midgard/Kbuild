@@ -22,6 +22,7 @@ KBASE_PATH = $(src)
 KBASE_PLATFORM_PATH = $(KBASE_PATH)/platform_dummy
 UMP_PATH = $(src)/../../../base
 EXYNOS_PATH_MACH = $(src)/../../../../arch/arm/mach-exynos/include
+EXYNOS_PATH_MACH_1= $(src)/../../../../../../arch/arm/mach-exynos
 EXYNOS_PATH_PLAT = $(src)/../../../../arch/arm/plat-samsung/include
 
 ifeq ($(CONFIG_MALI_ERROR_INJECTION),y)
@@ -70,7 +71,7 @@ endif
 
 # Use our defines when compiling
 ccflags-y += $(DEFINES) -I$(KBASE_PATH)   -I$(KBASE_PLATFORM_PATH) -I$(UMP_PATH)
-subdir-ccflags-y += $(DEFINES) -I$(KBASE_PATH)   -I$(KBASE_PLATFORM_PATH) -I$(OSK_PATH) -I$(UMP_PATH) -I$(EXYNOS_PATH_MACH) -I$(EXYNOS_PATH_PLAT)
+subdir-ccflags-y += $(DEFINES) -I$(KBASE_PATH)   -I$(KBASE_PLATFORM_PATH) -I$(OSK_PATH) -I$(UMP_PATH) -I$(EXYNOS_PATH_MACH) -I$(EXYNOS_PATH_PLAT) -I$(EXYNOS_PATH_1)
 
 SRC := \
 	mali_kbase_device.c \
