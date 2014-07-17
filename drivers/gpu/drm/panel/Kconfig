@@ -30,4 +30,14 @@ config DRM_PANEL_S6E8AA0
 	select DRM_MIPI_DSI
 	select VIDEOMODE_HELPERS
 
+config DRM_PANEL_EDP_LVDS
+	tristate "support for eDP/LVDS panels"
+	depends on OF && DRM_PANEL
+	select VIDEOMODE_HELPERS
+	help
+	  DRM panel driver for direct eDP panels or LVDS connected
+	  via DP bridges, that need at most a regulator for LCD unit,
+	  a regulator for LED unit and/or enable GPIOs for LCD or LED units.
+	  Delay values can also be specified to support powerup and
+	  powerdown process.
 endmenu
