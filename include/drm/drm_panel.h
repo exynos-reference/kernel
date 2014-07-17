@@ -31,7 +31,9 @@ struct drm_device;
 struct drm_panel;
 
 struct drm_panel_funcs {
+	int (*unprepare)(struct drm_panel *panel);
 	int (*disable)(struct drm_panel *panel);
+	int (*prepare)(struct drm_panel *panel);
 	int (*enable)(struct drm_panel *panel);
 	int (*get_modes)(struct drm_panel *panel);
 };
@@ -46,10 +48,26 @@ struct drm_panel {
 	struct list_head list;
 };
 
+static inline int drm_panel_unprepare(struct drm_panel *panel)
+{
+	if (panel && panel->funcs && panel->funcs->unprepare)
+		return panel->funcs->unprepare(panel);
+
+	return panel ? -ENOSYS : -EINVAL;
+}
+
 static inline int drm_panel_disable(struct drm_panel *panel)
 {
 	if (panel && panel->funcs && panel->funcs->disable)
 		return panel->funcs->disable(panel);
+
+	return panel ? -ENOSYS : -EINVAL;
+}
+
+static inline int drm_panel_prepare(struct drm_panel *panel)
+{
+	if (panel && panel->funcs && panel->funcs->prepare)
+		return panel->funcs->prepare(panel);
 
 	return panel ? -ENOSYS : -EINVAL;
 }
