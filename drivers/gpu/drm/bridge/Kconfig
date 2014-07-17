@@ -10,3 +10,11 @@ config DRM_PANEL_BINDER
 	select DRM_KMS_HELPER
 	select DRM_PANEL
 	---help---
+
+config DRM_PS8622
+	tristate "Parade eDP/LVDS bridge"
+	depends on DRM
+	select DRM_KMS_HELPER
+	select BACKLIGHT_LCD_SUPPORT
+	select BACKLIGHT_CLASS_DEVICE
+	---help---
