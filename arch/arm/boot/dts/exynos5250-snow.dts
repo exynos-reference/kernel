@@ -195,7 +195,7 @@
 					dcdc3 {
 						ti,enable-ext-control;
 					};
-					fet1 {
+					fet1: fet1 {
 						regulator-name = "vcd_led";
 						ti,overcurrent-wait = <3>;
 					};
@@ -218,7 +218,7 @@
 						regulator-always-on;
 						ti,overcurrent-wait = <3>;
 					};
-					fet6 {
+					fet6: fet6 {
 						regulator-name = "lcd_vdd";
 						ti,overcurrent-wait = <3>;
 					};
@@ -341,10 +341,9 @@
 
 	panel_lvds: panel-lvds {
 		compatible = "panel-lvds";
-		panel-prepare-delay = <100>;
-		panel-unprepare-delay = <100>;
-		panel-enable-delay = <20>;
-		led-en-gpio = <&gpx3 0 1>;
+		lcd-supply = <&fet6>;
+		backlight-supply = <&fet1>;
+		backlight-enable-gpio = <&gpx3 0 0>;
 		pinctrl-0 = <&dp_backlight_en>;
 
 		display-timings {
