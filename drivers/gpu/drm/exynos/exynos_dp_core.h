@@ -146,9 +146,11 @@ struct link_train {
 
 struct exynos_dp_device {
 	struct device		*dev;
+	struct device_node	*panel_node;
 	struct drm_device	*drm_dev;
 	struct drm_connector	connector;
 	struct drm_encoder	*encoder;
+	struct drm_panel	*edp_panel;
 	struct clk		*clock;
 	unsigned int		irq;
 	void __iomem		*reg_base;
