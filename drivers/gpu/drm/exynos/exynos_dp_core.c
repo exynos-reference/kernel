@@ -31,6 +31,7 @@
 #include <drm/drm_panel.h>
 #include <drm/bridge/ptn3460.h>
 #include <drm/bridge/panel_binder.h>
+#include <drm/bridge/ps8622.h>
 
 #include "exynos_drm_drv.h"
 #include "exynos_dp_core.h"
@@ -998,6 +999,10 @@ static int exynos_drm_attach_lcd_bridge(struct exynos_dp_device *dp,
 
 	if (find_bridge("nxp,ptn3460", &bridge)) {
 		bridge_chain = ptn3460_init(dp->drm_dev, encoder, bridge.client,
+								bridge.node);
+	} else if (find_bridge("parade,ps8622", &bridge) ||
+				find_bridge("parade,ps8625", &bridge)) {
+		bridge_chain = ps8622_init(dp->drm_dev, encoder, bridge.client,
 								bridge.node);
 	}
 
