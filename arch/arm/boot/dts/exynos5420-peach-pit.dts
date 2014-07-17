@@ -103,6 +103,8 @@
 
 	panel_lvds: panel-lvds {
 		compatible = "panel-lvds";
+		lcd-supply = <&tps65090_fet6>;
+		backlight-supply = <&tps65090_fet1>;
 
 		display-timings {
 			native-mode = <&timing0>;
@@ -503,8 +505,8 @@
 	ps8625-bridge@48 {
 		compatible = "parade,ps8625";
 		reg = <0x48>;
-		sleep-gpio = <&gpx3 5 0>;
-		reset-gpio = <&gpy7 7 0>;
+		sleep-gpios = <&gpx3 5 0>;
+		reset-gpios = <&gpy7 7 0>;
 		lane-count = <2>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&ps8625_sleep &ps8625_reset>;
