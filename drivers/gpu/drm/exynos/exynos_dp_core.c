@@ -988,19 +988,19 @@ static bool find_bridge(const char *compat, struct bridge_init *bridge)
 	return true;
 }
 
-/* returns the number of bridges attached */
-static int exynos_drm_attach_lcd_bridge(struct drm_device *dev,
+static int exynos_drm_attach_lcd_bridge(struct exynos_dp_device *dp,
 		struct drm_encoder *encoder)
 {
 	struct bridge_init bridge;
-	int ret;
+	struct drm_bridge *bridge_chain = NULL;
+	bool connector_created = false;
 
 	if (find_bridge("nxp,ptn3460", &bridge)) {
-		ret = ptn3460_init(dev, encoder, bridge.client, bridge.node);
-		if (!ret)
-			return 1;
+		bridge_chain = ptn3460_init(dp->drm_dev, encoder, bridge.client,
+								bridge.node);
 	}
-	return 0;
+
+	return connector_created;
 }
 
 static int exynos_dp_create_connector(struct exynos_drm_display *display,
@@ -1013,7 +1013,7 @@ static int exynos_dp_create_connector(struct exynos_drm_display *display,
 	dp->encoder = encoder;
 
 	/* Pre-empt DP connector creation if there's a bridge */
-	ret = exynos_drm_attach_lcd_bridge(dp->drm_dev, encoder);
+	ret = exynos_drm_attach_lcd_bridge(dp, encoder);
 	if (ret)
 		return 0;
 
