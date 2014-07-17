@@ -652,6 +652,7 @@ struct drm_bridge_funcs {
 struct drm_bridge {
 	struct drm_device *dev;
 	struct list_head head;
+	struct drm_bridge *next_bridge;
 
 	struct drm_mode_object base;
 
@@ -1164,6 +1165,77 @@ drm_property_blob_find(struct drm_device *dev, uint32_t id)
 	struct drm_mode_object *mo;
 	mo = drm_mode_object_find(dev, id, DRM_MODE_OBJECT_BLOB);
 	return mo ? obj_to_blob(mo) : NULL;
+}
+
+static inline int drm_bridge_add_to_chain(struct drm_bridge *head,
+					  struct drm_bridge *last)
+{
+	struct drm_bridge *temp = head;
+
+	if (head && last) {
+		while (temp->next_bridge)
+			temp = temp->next_bridge;
+
+		temp->next_bridge = last;
+		return 0;
+	}
+
+	return -EINVAL;
+}
+
+static inline void drm_next_bridge_mode_fixup(struct drm_bridge *bridge,
+					const struct drm_display_mode *mode,
+					struct drm_display_mode *adjusted_mode)
+{
+	if (bridge && bridge->next_bridge && bridge->next_bridge->funcs &&
+	    bridge->next_bridge->funcs->mode_fixup)
+		bridge->next_bridge->funcs->mode_fixup(bridge->next_bridge,
+							mode, adjusted_mode);
+}
+
+static inline void drm_next_bridge_disable(struct drm_bridge *bridge)
+{
+	if (bridge && bridge->next_bridge && bridge->next_bridge->funcs &&
+	    bridge->next_bridge->funcs->disable)
+		bridge->next_bridge->funcs->disable(bridge->next_bridge);
+}
+
+static inline void drm_next_bridge_post_disable(struct drm_bridge *bridge)
+{
+	if (bridge && bridge->next_bridge && bridge->next_bridge->funcs &&
+	    bridge->next_bridge->funcs->post_disable)
+		bridge->next_bridge->funcs->post_disable(bridge->next_bridge);
+}
+
+static inline void drm_next_bridge_mode_set(struct drm_bridge *bridge,
+					struct drm_display_mode *mode,
+					struct drm_display_mode *adjusted_mode)
+{
+	if (bridge && bridge->next_bridge && bridge->next_bridge->funcs &&
+	    bridge->next_bridge->funcs->mode_set)
+		bridge->next_bridge->funcs->mode_set(bridge->next_bridge,
+							mode, adjusted_mode);
+}
+
+static inline void drm_next_bridge_pre_enable(struct drm_bridge *bridge)
+{
+	if (bridge && bridge->next_bridge && bridge->next_bridge->funcs &&
+	    bridge->next_bridge->funcs->pre_enable)
+		bridge->next_bridge->funcs->pre_enable(bridge->next_bridge);
+}
+
+static inline void drm_next_bridge_enable(struct drm_bridge *bridge)
+{
+	if (bridge && bridge->next_bridge && bridge->next_bridge->funcs &&
+	    bridge->next_bridge->funcs->enable)
+		bridge->next_bridge->funcs->enable(bridge->next_bridge);
+}
+
+static inline void drm_next_bridge_destroy(struct drm_bridge *bridge)
+{
+	if (bridge && bridge->next_bridge && bridge->next_bridge->funcs &&
+	    bridge->next_bridge->funcs->destroy)
+		bridge->next_bridge->funcs->destroy(bridge->next_bridge);
 }
 
 /* Plane list iterator for legacy (overlay only) planes. */
