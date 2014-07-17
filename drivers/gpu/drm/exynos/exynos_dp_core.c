@@ -30,6 +30,7 @@
 #include <drm/drm_crtc_helper.h>
 #include <drm/drm_panel.h>
 #include <drm/bridge/ptn3460.h>
+#include <drm/bridge/panel_binder.h>
 
 #include "exynos_drm_drv.h"
 #include "exynos_dp_core.h"
@@ -992,12 +993,21 @@ static int exynos_drm_attach_lcd_bridge(struct exynos_dp_device *dp,
 		struct drm_encoder *encoder)
 {
 	struct bridge_init bridge;
-	struct drm_bridge *bridge_chain = NULL;
+	struct drm_bridge *bridge_chain = NULL, *next = NULL;
 	bool connector_created = false;
 
 	if (find_bridge("nxp,ptn3460", &bridge)) {
 		bridge_chain = ptn3460_init(dp->drm_dev, encoder, bridge.client,
 								bridge.node);
+	}
+
+	if (bridge_chain && dp->edp_panel) {
+		next = panel_binder_init(dp->drm_dev, encoder, bridge.client,
+			bridge.node, dp->edp_panel, DRM_MODE_CONNECTOR_LVDS,
+			DRM_CONNECTOR_POLL_HPD);
+		if (next)
+			connector_created = true;
+		drm_bridge_add_to_chain(bridge_chain, next);
 	}
 
 	return connector_created;
