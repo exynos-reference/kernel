@@ -103,8 +103,9 @@
 		compatible = "panel-lvds";
 		panel-prepare-delay = <105>;
 		panel-unprepare-delay = <50>;
-		led-en-gpio = <&gpx2 2 0>;
-		pinctrl-0 = <&dp_backlight_en>;
+		lcd-supply = <&tps65090_fet6>;
+		backlight-supply = <&tps65090_fet1>;
+		backlight-enable-gpios = <&gpx2 2 0>;
 
 		display-timings {
 			native-mode = <&timing0>;
@@ -609,6 +610,13 @@
 		samsung,pin-drv = <0>;
 	};
 
+	dp_backlight_en {
+		samsung,pins = "gpx2-2";
+		samsung,pin-function = <1>;
+		samsung,pin-pud = <0>;
+		samsung,pin-drv = <0>;
+	};
+
 	tps65090_irq: tps65090-irq {
 		samsung,pins = "gpx2-5";
 		samsung,pin-function = <0>;
@@ -639,13 +647,6 @@
 
 	pmic_dvs_1: pmic-dvs-1 {
 		samsung,pins = "gpy7-6";
-		samsung,pin-function = <1>;
-		samsung,pin-pud = <0>;
-		samsung,pin-drv = <0>;
-	};
-
-	dp_backlight_en: backlight-en {
-		samsung,pins = "gpx2-2";
 		samsung,pin-function = <1>;
 		samsung,pin-pud = <0>;
 		samsung,pin-drv = <0>;
