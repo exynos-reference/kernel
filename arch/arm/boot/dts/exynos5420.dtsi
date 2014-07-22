@@ -1070,7 +1070,6 @@
 		interrupts = <3 2>;
 		clock-names = "sysmmu", "master";
 		clocks = <&clock CLK_SMMU_FIMD1M0>, <&clock CLK_FIMD1>;
-		samsung,power-domain = <&disp_pd>;
 		mmu-masters = <&fimd>;
 	};
 
@@ -1081,7 +1080,6 @@
 		interrupts = <3 0>;
 		clock-names = "sysmmu", "master";
 		clocks = <&clock CLK_SMMU_FIMD1M1>, <&clock CLK_FIMD1>;
-		samsung,power-domain = <&disp_pd>;
 		mmu-masters = <&fimd>;
 	};
 
@@ -1092,7 +1090,6 @@
 		interrupts = <7 4>;
 		clock-names = "sysmmu", "master";
 		clocks = <&clock CLK_SMMU_MIXER>, <&clock CLK_MIXER>;
-		samsung,power-domain = <&disp_pd>;
 		mmu-masters = <&mixer>;
 	};
 
