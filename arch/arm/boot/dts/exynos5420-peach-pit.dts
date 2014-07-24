@@ -478,6 +478,37 @@
 			};
 		};
 	};
+
+	/* Chain regulators to ensure proper Wifi turn on sequence */
+	wifi_rst_regulator: wifi-rst-regulator {
+		compatible = "regulator-fixed";
+		regulator-name = "wifi-rst-l";
+		gpio = <&gpx0 1 0>;
+		enable-active-high;
+		startup-delay-us = <1500>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&wifi_rst>;
+
+		/*
+		 * Technically we should have a vin-supply of the 32k clock.
+		 * ...but that causes a deferred probe of this regulator
+		 * despite the fact that we don't need to enable it until
+		 * much later.  Skip the dependency since we know that the
+		 * 32k clock will always be kept on from early boot.
+		 *
+		 * vin-supply = <&en32khz_cp>;
+		 */
+	};
+
+	wifi_en_regulator: wifi-en-regulator {
+		compatible = "regulator-fixed";
+		regulator-name = "wifi-en";
+		gpio = <&gpx0 0 0>;
+		enable-active-high;
+		pinctrl-names = "default";
+		pinctrl-0 = <&wifi_en>;
+		vin-supply = <&wifi_rst_regulator>;
+	};
 };
 
 &hsi2c_7 {
@@ -546,6 +577,36 @@
 	slot@0 {
 		reg = <0>;
 		bus-width = <8>;
+	};
+};
+
+&mmc_1 {
+	/*
+	 * The current best way to ensure that reset/enable and clocks
+	 * are available before we try to probe the WiFi card is through
+	 * a chain of regulators.
+	 */
+	vmmc-supply = <&wifi_en_regulator>;
+
+	status = "okay";
+	num-slots = <1>;
+	supports-highspeed;
+	keep-power-in-suspend;
+	/* non-removable NOT set so mwifiex driver can use reset trick */
+	edge-triggered-interrupts;
+	broken-cd;
+	bypass-smu;
+	fifo-depth = <0x40>;
+	card-detect-delay = <200>;
+	clock-frequency = <400000000>;
+	samsung,dw-mshc-ciu-div = <1>;
+	samsung,dw-mshc-sdr-timing = <0 1>;
+	samsung,dw-mshc-ddr-timing = <0 2>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&sd1_clk &sd1_cmd &sd1_int &sd1_bus1 &sd1_bus4 &sd1_bus8>;
+	slot@0 {
+		reg = <0>;
+		bus-width = <4>;
 	};
 };
 
@@ -639,6 +700,20 @@
 
 	pmic_dvs_1: pmic-dvs-1 {
 		samsung,pins = "gpy7-6";
+		samsung,pin-function = <1>;
+		samsung,pin-pud = <0>;
+		samsung,pin-drv = <0>;
+	};
+
+	wifi_en: wifi-en {
+		samsung,pins = "gpx0-0";
+		samsung,pin-function = <1>;
+		samsung,pin-pud = <0>;
+		samsung,pin-drv = <0>;
+	};
+
+	wifi_rst: wifi-rst {
+		samsung,pins = "gpx0-1";
 		samsung,pin-function = <1>;
 		samsung,pin-pud = <0>;
 		samsung,pin-drv = <0>;
