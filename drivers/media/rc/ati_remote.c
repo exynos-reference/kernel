@@ -622,8 +622,8 @@ static void ati_remote_input_report(struct urb *urb)
 				* it would cause ghost repeats which would be a
 				* regression for this driver.
 				*/
-				rc_keydown_notimeout(ati_remote->rdev, scancode,
-						     data[2]);
+				rc_keydown_notimeout(ati_remote->rdev, RC_TYPE_OTHER,
+						     scancode, data[2]);
 				rc_keyup(ati_remote->rdev);
 			}
 			return;
@@ -784,7 +784,7 @@ static void ati_remote_rc_init(struct ati_remote *ati_remote)
 
 	rdev->priv = ati_remote;
 	rdev->driver_type = RC_DRIVER_SCANCODE;
-	rc_set_allowed_protocols(rdev, RC_BIT_OTHER);
+	rdev->allowed_protocols = RC_BIT_OTHER;
 	rdev->driver_name = "ati_remote";
 
 	rdev->open = ati_remote_rc_open;
