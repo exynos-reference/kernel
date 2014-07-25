@@ -629,6 +629,7 @@ struct drm_plane {
 
 /**
  * drm_bridge_funcs - drm_bridge control functions
+ * @post_encoder_init: called by the parent encoder
  * @mode_fixup: Try to fixup (or reject entirely) proposed mode for this bridge
  * @disable: Called right before encoder prepare, disables the bridge
  * @post_disable: Called right after encoder prepare, for lockstepped disable
@@ -638,6 +639,7 @@ struct drm_plane {
  * @destroy: make object go away
  */
 struct drm_bridge_funcs {
+	int (*post_encoder_init)(struct drm_bridge *bridge);
 	bool (*mode_fixup)(struct drm_bridge *bridge,
 			   const struct drm_display_mode *mode,
 			   struct drm_display_mode *adjusted_mode);
@@ -658,15 +660,19 @@ struct drm_bridge_funcs {
  * @base: base mode object
  * @funcs: control functions
  * @driver_private: pointer to the bridge driver's internal context
+ * @connector_polled: polled flag needed for registering connector
  */
 struct drm_bridge {
-	struct drm_device *dev;
+	struct device *dev;
+	struct drm_device *drm_dev;
+	struct drm_encoder *encoder;
 	struct list_head head;
 
 	struct drm_mode_object base;
 
 	const struct drm_bridge_funcs *funcs;
 	void *driver_private;
+	int connector_polled;
 };
 
 /**
@@ -906,8 +912,12 @@ extern void drm_connector_cleanup(struct drm_connector *connector);
 /* helper to unplug all connectors from sysfs for device */
 extern void drm_connector_unplug_all(struct drm_device *dev);
 
-extern int drm_bridge_init(struct drm_device *dev, struct drm_bridge *bridge,
-			   const struct drm_bridge_funcs *funcs);
+extern int drm_bridge_add_for_lookup(struct drm_bridge *bridge);
+extern void drm_bridge_remove_from_lookup(struct drm_bridge *bridge);
+extern struct drm_bridge *of_drm_find_bridge(struct device_node *np);
+extern int drm_bridge_attach_encoder(struct drm_bridge *bridge,
+				struct drm_encoder *encoder);
+extern int drm_bridge_init(struct drm_device *dev, struct drm_bridge *bridge);
 extern void drm_bridge_cleanup(struct drm_bridge *bridge);
 
 extern int drm_encoder_init(struct drm_device *dev,
