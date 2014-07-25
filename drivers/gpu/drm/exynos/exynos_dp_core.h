@@ -150,6 +150,7 @@ struct exynos_dp_device {
 	struct drm_connector	connector;
 	struct drm_encoder	*encoder;
 	struct drm_panel	*panel;
+	struct drm_bridge	*bridge;
 	struct clk		*clock;
 	unsigned int		irq;
 	void __iomem		*reg_base;
