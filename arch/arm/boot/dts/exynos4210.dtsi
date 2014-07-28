@@ -35,10 +35,22 @@
 		#address-cells = <1>;
 		#size-cells = <0>;
 
-		cpu@900 {
+		cpu0: cpu@900 {
 			device_type = "cpu";
 			compatible = "arm,cortex-a9";
 			reg = <0x900>;
+			clocks = <&clock CLK_ARM_CLK>;
+			clock-names = "cpu";
+			clock-latency = <160000>;
+
+			operating-points = <
+				1200000 1250000
+				1000000 1150000
+				800000	1075000
+				500000	975000
+				400000	975000
+				200000	950000
+			>;
 		};
 
 		cpu@901 {

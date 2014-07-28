@@ -446,3 +446,7 @@
 		};
 	};
 };
+
+&cpu0 {
+	cpu0-supply = <&varm_breg>;
+};

@@ -509,4 +509,8 @@
 	};
 };
 
+&cpu0 {
+	cpu0-supply = <&buck2_reg>;
+};
+
 #include "cros-ec-keyboard.dtsi"
