@@ -617,10 +617,14 @@ static struct samsung_mux_clock exynos5x_mux_clks[] __initdata = {
 	MUX(0, "mout_mspll_kfc", mout_mspll_cpu_p, SRC_TOP7, 8, 2),
 	MUX(0, "mout_mspll_cpu", mout_mspll_cpu_p, SRC_TOP7, 12, 2),
 
-	MUX(0, "mout_apll", mout_apll_p, SRC_CPU, 0, 1),
-	MUX(0, "mout_cpu", mout_cpu_p, SRC_CPU, 16, 1),
-	MUX(0, "mout_kpll", mout_kpll_p, SRC_KFC, 0, 1),
-	MUX(0, "mout_kfc", mout_kfc_p, SRC_KFC, 16, 1),
+	MUX_F(0, "mout_apll", mout_apll_p, SRC_CPU, 0, 1,
+				CLK_SET_RATE_PARENT, 0),
+	MUX_F(0, "mout_cpu", mout_cpu_p, SRC_CPU, 16, 1, 0,
+				CLK_MUX_READ_ONLY),
+	MUX_F(0, "mout_kpll", mout_kpll_p, SRC_KFC, 0, 1,
+				CLK_SET_RATE_PARENT, 0),
+	MUX_F(0, "mout_kfc", mout_kfc_p, SRC_KFC, 16, 1, 0,
+				CLK_MUX_READ_ONLY),
 
 	MUX(0, "mout_aclk200", mout_group1_p, SRC_TOP0, 8, 2),
 	MUX(0, "mout_aclk200_fsys2", mout_group1_p, SRC_TOP0, 12, 2),
@@ -776,11 +780,16 @@ static struct samsung_mux_clock exynos5x_mux_clks[] __initdata = {
 };
 
 static struct samsung_div_clock exynos5x_div_clks[] __initdata = {
-	DIV(0, "div_arm", "mout_cpu", DIV_CPU0, 0, 3),
-	DIV(0, "sclk_apll", "mout_apll", DIV_CPU0, 24, 3),
-	DIV(0, "armclk2", "div_arm", DIV_CPU0, 28, 3),
-	DIV(0, "div_kfc", "mout_kfc", DIV_KFC0, 0, 3),
-	DIV(0, "sclk_kpll", "mout_kpll", DIV_KFC0, 24, 3),
+	DIV_F(0, "div_arm", "mout_cpu", DIV_CPU0, 0, 3,
+			CLK_GET_RATE_NOCACHE, CLK_DIVIDER_READ_ONLY),
+	DIV_F(0, "sclk_apll", "mout_apll", DIV_CPU0, 24, 3,
+			CLK_GET_RATE_NOCACHE, CLK_DIVIDER_READ_ONLY),
+	DIV_F(0, "armclk2", "div_arm", DIV_CPU0, 28, 3,
+			CLK_GET_RATE_NOCACHE, CLK_DIVIDER_READ_ONLY),
+	DIV_F(0, "div_kfc", "mout_kfc", DIV_KFC0, 0, 3,
+			CLK_GET_RATE_NOCACHE, CLK_DIVIDER_READ_ONLY),
+	DIV_F(0, "sclk_kpll", "mout_kpll", DIV_KFC0, 24, 3,
+			CLK_GET_RATE_NOCACHE, CLK_DIVIDER_READ_ONLY),
 
 	DIV(0, "dout_aclk400_isp", "mout_aclk400_isp", DIV_TOP0, 0, 3),
 	DIV(0, "dout_aclk400_mscl", "mout_aclk400_mscl", DIV_TOP0, 4, 3),

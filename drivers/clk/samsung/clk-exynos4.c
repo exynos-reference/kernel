@@ -578,7 +578,8 @@ static struct samsung_mux_clock exynos4210_mux_clks[] __initdata = {
 	MUX(0, "mout_fimd1", group1_p4210, E4210_SRC_LCD1, 0, 4),
 	MUX(0, "mout_mipi1", group1_p4210, E4210_SRC_LCD1, 12, 4),
 	MUX(CLK_SCLK_MPLL, "sclk_mpll", mout_mpll_p, SRC_CPU, 8, 1),
-	MUX(CLK_MOUT_CORE, "mout_core", mout_core_p4210, SRC_CPU, 16, 1),
+	MUX_F(CLK_MOUT_CORE, "mout_core", mout_core_p4210, SRC_CPU, 16, 1, 0,
+			CLK_MUX_READ_ONLY),
 	MUX(0, "mout_hpm", mout_core_p4210, SRC_CPU, 20, 1),
 	MUX(CLK_SCLK_VPLL, "sclk_vpll", sclk_vpll_p4210, SRC_TOP0, 8, 1),
 	MUX(CLK_MOUT_FIMC0, "mout_fimc0", group1_p4210, SRC_CAM, 0, 4),
@@ -714,15 +715,24 @@ static struct samsung_div_clock exynos4_div_clks[] __initdata = {
 	DIV(0, "div_clkout_rightbus", "mout_clkout_rightbus",
 			CLKOUT_CMU_RIGHTBUS, 8, 6),
 
-	DIV(0, "div_core", "mout_core", DIV_CPU0, 0, 3),
-	DIV(0, "div_corem0", "div_core2", DIV_CPU0, 4, 3),
-	DIV(0, "div_corem1", "div_core2", DIV_CPU0, 8, 3),
-	DIV(0, "div_periph", "div_core2", DIV_CPU0, 12, 3),
-	DIV(0, "div_atb", "mout_core", DIV_CPU0, 16, 3),
-	DIV(0, "div_pclk_dbg", "div_atb", DIV_CPU0, 20, 3),
-	DIV(CLK_ARM_CLK, "div_core2", "div_core", DIV_CPU0, 28, 3),
-	DIV(0, "div_copy", "mout_hpm", DIV_CPU1, 0, 3),
-	DIV(0, "div_hpm", "div_copy", DIV_CPU1, 4, 3),
+	DIV_F(0, "div_core", "mout_core", DIV_CPU0, 0, 3,
+			CLK_GET_RATE_NOCACHE, CLK_DIVIDER_READ_ONLY),
+	DIV_F(0, "div_corem0", "div_core2", DIV_CPU0, 4, 3,
+			CLK_GET_RATE_NOCACHE, CLK_DIVIDER_READ_ONLY),
+	DIV_F(0, "div_corem1", "div_core2", DIV_CPU0, 8, 3,
+			CLK_GET_RATE_NOCACHE, CLK_DIVIDER_READ_ONLY),
+	DIV_F(0, "div_periph", "div_core2", DIV_CPU0, 12, 3,
+			CLK_GET_RATE_NOCACHE, CLK_DIVIDER_READ_ONLY),
+	DIV_F(0, "div_atb", "mout_core", DIV_CPU0, 16, 3,
+			CLK_GET_RATE_NOCACHE, CLK_DIVIDER_READ_ONLY),
+	DIV_F(0, "div_pclk_dbg", "div_atb", DIV_CPU0, 20, 3,
+			CLK_GET_RATE_NOCACHE, CLK_DIVIDER_READ_ONLY),
+	DIV_F(CLK_ARM_CLK, "div_core2", "div_core", DIV_CPU0, 28, 3,
+			CLK_GET_RATE_NOCACHE, CLK_DIVIDER_READ_ONLY),
+	DIV_F(0, "div_copy", "mout_hpm", DIV_CPU1, 0, 3,
+			CLK_GET_RATE_NOCACHE, CLK_DIVIDER_READ_ONLY),
+	DIV_F(0, "div_hpm", "div_copy", DIV_CPU1, 4, 3,
+			CLK_GET_RATE_NOCACHE, CLK_DIVIDER_READ_ONLY),
 	DIV(0, "div_clkout_cpu", "mout_clkout_cpu", CLKOUT_CMU_CPU, 8, 6),
 
 	DIV(0, "div_fimc0", "mout_fimc0", DIV_CAM, 0, 4),
@@ -770,7 +780,8 @@ static struct samsung_div_clock exynos4_div_clks[] __initdata = {
 	DIV(0, "div_spi_pre2", "div_spi2", DIV_PERIL2, 8, 8),
 	DIV(0, "div_audio1", "mout_audio1", DIV_PERIL4, 0, 4),
 	DIV(0, "div_audio2", "mout_audio2", DIV_PERIL4, 16, 4),
-	DIV(CLK_SCLK_APLL, "sclk_apll", "mout_apll", DIV_CPU0, 24, 3),
+	DIV_F(CLK_SCLK_APLL, "sclk_apll", "mout_apll", DIV_CPU0, 24, 3,
+			CLK_GET_RATE_NOCACHE, CLK_DIVIDER_READ_ONLY),
 	DIV_F(0, "div_mipi_pre0", "div_mipi0", DIV_LCD0, 20, 4,
 			CLK_SET_RATE_PARENT, 0),
 	DIV_F(0, "div_mmc_pre0", "div_mmc0", DIV_FSYS1, 8, 8,
@@ -1187,17 +1198,10 @@ static struct samsung_gate_clock exynos4x12_gate_clks[] __initdata = {
 		0),
 };
 
-static struct samsung_clock_alias exynos4_aliases[] __initdata = {
+static struct samsung_clock_alias exynos4x12_aliases[] __initdata = {
 	ALIAS(CLK_MOUT_CORE, NULL, "moutcore"),
 	ALIAS(CLK_ARM_CLK, NULL, "armclk"),
 	ALIAS(CLK_SCLK_APLL, NULL, "mout_apll"),
-};
-
-static struct samsung_clock_alias exynos4210_aliases[] __initdata = {
-	ALIAS(CLK_SCLK_MPLL, NULL, "mout_mpll"),
-};
-
-static struct samsung_clock_alias exynos4x12_aliases[] __initdata = {
 	ALIAS(CLK_MOUT_MPLL_USER_C, NULL, "mout_mpll"),
 };
 
@@ -1464,8 +1468,6 @@ static void __init exynos4_clk_init(struct device_node *np,
 			ARRAY_SIZE(exynos4210_div_clks));
 		samsung_clk_register_gate(ctx, exynos4210_gate_clks,
 			ARRAY_SIZE(exynos4210_gate_clks));
-		samsung_clk_register_alias(ctx, exynos4210_aliases,
-			ARRAY_SIZE(exynos4210_aliases));
 		samsung_clk_register_fixed_factor(ctx,
 			exynos4210_fixed_factor_clks,
 			ARRAY_SIZE(exynos4210_fixed_factor_clks));
@@ -1487,9 +1489,6 @@ static void __init exynos4_clk_init(struct device_node *np,
 			ARRAY_SIZE(exynos4x12_fixed_factor_clks));
 	}
 
-	samsung_clk_register_alias(ctx, exynos4_aliases,
-			ARRAY_SIZE(exynos4_aliases));
-
 	exynos4_core_down_clock(soc);
 	exynos4_clk_sleep_init();
 
@@ -1500,6 +1499,7 @@ static void __init exynos4_clk_init(struct device_node *np,
 		exynos4_soc == EXYNOS4210 ? "Exynos4210" : "Exynos4x12",
 		_get_rate("sclk_apll"),	_get_rate("sclk_mpll"),
 		_get_rate("sclk_epll"), _get_rate("sclk_vpll"),
+		exynos4_soc == EXYNOS4210 ? _get_rate("armclk") :
 		_get_rate("div_core2"));
 }
 
