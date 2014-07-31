@@ -45,6 +45,7 @@ struct panel_desc {
 
 struct panel_simple {
 	struct drm_panel base;
+	bool prepared;
 	bool enabled;
 
 	const struct panel_desc *desc;
@@ -105,10 +106,6 @@ static int panel_simple_disable(struct drm_panel *panel)
 		backlight_update_status(p->backlight);
 	}
 
-	if (p->enable_gpio)
-		gpiod_set_value_cansleep(p->enable_gpio, 0);
-
-	regulator_disable(p->supply);
 	p->enabled = false;
 
 	return 0;
@@ -116,20 +113,27 @@ static int panel_simple_disable(struct drm_panel *panel)
 
 static int panel_simple_unprepare(struct drm_panel *panel)
 {
+	struct panel_simple *p = to_panel_simple(panel);
+
+	if (!p->prepared)
+		return 0;
+
+	if (p->enable_gpio)
+		gpiod_set_value_cansleep(p->enable_gpio, 0);
+
+	regulator_disable(p->supply);
+
+	p->prepared = false;
+
 	return 0;
 }
 
 static int panel_simple_prepare(struct drm_panel *panel)
 {
-	return 0;
-}
-
-static int panel_simple_enable(struct drm_panel *panel)
-{
 	struct panel_simple *p = to_panel_simple(panel);
 	int err;
 
-	if (p->enabled)
+	if (p->prepared)
 		return 0;
 
 	err = regulator_enable(p->supply);
@@ -140,6 +144,18 @@ static int panel_simple_enable(struct drm_panel *panel)
 
 	if (p->enable_gpio)
 		gpiod_set_value_cansleep(p->enable_gpio, 1);
+
+	p->prepared = true;
+
+	return 0;
+}
+
+static int panel_simple_enable(struct drm_panel *panel)
+{
+	struct panel_simple *p = to_panel_simple(panel);
+
+	if (p->enabled)
+		return 0;
 
 	if (p->backlight) {
 		p->backlight->props.power = FB_BLANK_UNBLANK;
@@ -191,6 +207,7 @@ static int panel_simple_probe(struct device *dev, const struct panel_desc *desc)
 		return -ENOMEM;
 
 	panel->enabled = false;
+	panel->prepared = false;
 	panel->desc = desc;
 
 	panel->supply = devm_regulator_get(dev, "power");
