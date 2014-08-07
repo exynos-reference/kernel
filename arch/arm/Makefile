@@ -187,8 +187,6 @@ machine-$(CONFIG_ARCH_ROCKCHIP)		+= rockchip
 machine-$(CONFIG_ARCH_RPC)		+= rpc
 machine-$(CONFIG_ARCH_S3C24XX)		+= s3c24xx
 machine-$(CONFIG_ARCH_S3C64XX)		+= s3c64xx
-machine-$(CONFIG_ARCH_S5P64X0)		+= s5p64x0
-machine-$(CONFIG_ARCH_S5PC100)		+= s5pc100
 machine-$(CONFIG_ARCH_S5PV210)		+= s5pv210
 machine-$(CONFIG_ARCH_SA1100)		+= sa1100
 machine-$(CONFIG_ARCH_SHMOBILE) 	+= shmobile
@@ -212,11 +210,11 @@ machine-$(CONFIG_PLAT_SPEAR)		+= spear
 plat-$(CONFIG_ARCH_EXYNOS)	+= samsung
 plat-$(CONFIG_ARCH_OMAP)	+= omap
 plat-$(CONFIG_ARCH_S3C64XX)	+= samsung
+plat-$(CONFIG_ARCH_S5PV210)	+= samsung
 plat-$(CONFIG_PLAT_IOP)		+= iop
 plat-$(CONFIG_PLAT_ORION)	+= orion
 plat-$(CONFIG_PLAT_PXA)		+= pxa
 plat-$(CONFIG_PLAT_S3C24XX)	+= samsung
-plat-$(CONFIG_PLAT_S5P)		+= samsung
 plat-$(CONFIG_PLAT_VERSATILE)	+= versatile
 
 ifeq ($(CONFIG_ARCH_EBSA110),y)
@@ -240,7 +238,7 @@ MACHINE  :=
 endif
 
 machdirs := $(patsubst %,arch/arm/mach-%/,$(machine-y))
-platdirs := $(patsubst %,arch/arm/plat-%/,$(plat-y))
+platdirs := $(patsubst %,arch/arm/plat-%/,$(sort $(plat-y)))
 
 ifneq ($(CONFIG_ARCH_MULTIPLATFORM),y)
 ifeq ($(KBUILD_SRC),)
