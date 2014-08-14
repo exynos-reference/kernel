@@ -884,7 +884,7 @@ static int __reqbufs(struct vb2_queue *q, struct v4l2_requestbuffers *req)
 		 */
 		if (q->memory == V4L2_MEMORY_MMAP && __buffers_in_use(q)) {
 			dprintk(1, "memory in use, cannot free\n");
-			return -EBUSY;
+			//return -EBUSY;
 		}
 
 		/*
