@@ -418,7 +418,7 @@ static int s5p_mfc_set_dec_stream_buffer_v6(struct s5p_mfc_ctx *ctx,
 		ctx->inst_no, buf_addr, strm_size, strm_size);
 	WRITEL(strm_size, mfc_regs->d_stream_data_size);
 	WRITEL(buf_addr, mfc_regs->d_cpb_buffer_addr);
-	WRITEL(buf_size->cpb, mfc_regs->d_cpb_buffer_size);
+	WRITEL(buf_size->cpb + SZ_1K, mfc_regs->d_cpb_buffer_size);
 	WRITEL(start_num_byte, mfc_regs->d_cpb_buffer_offset);
 
 	mfc_debug_leave();
