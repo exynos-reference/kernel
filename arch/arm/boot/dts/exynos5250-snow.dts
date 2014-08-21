@@ -327,7 +327,7 @@
 	};
 
 	panel: panel-simple {
-		compatible = "simple-panel";
+		compatible = "chunghwa,claa101wb01", "simple-panel";
 		power-supply = <&fet6>;
 		backlight = <&backlight>;
 	};
