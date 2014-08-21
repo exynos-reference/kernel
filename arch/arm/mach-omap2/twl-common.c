@@ -91,18 +91,14 @@ void __init omap_pmic_late_init(void)
 }
 
 #if defined(CONFIG_ARCH_OMAP3)
-struct phy_consumer consumers[] = {
-	PHY_CONSUMER("musb-hdrc.0", "usb"),
-};
-
-struct phy_init_data init_data = {
-	.consumers = consumers,
-	.num_consumers = ARRAY_SIZE(consumers),
+static struct phy_lookup twl4030_usb_lookup = {
+	.phy_name	= "phy-twl4030_usb.0",
+	.dev_id		= "musb-hdrc.0",
+	.con_id		= "usb",
 };
 
 static struct twl4030_usb_data omap3_usb_pdata = {
-	.usb_mode	= T2_USB_MODE_ULPI,
-	.init_data	= &init_data,
+	.usb_mode = T2_USB_MODE_ULPI,
 };
 
 static int omap3_batt_table[] = {
@@ -225,8 +221,10 @@ void __init omap3_pmic_get_config(struct twl4030_platform_data *pmic_data,
 	}
 
 	/* Common platform data configurations */
-	if (pdata_flags & TWL_COMMON_PDATA_USB && !pmic_data->usb)
+	if (pdata_flags & TWL_COMMON_PDATA_USB && !pmic_data->usb) {
+		phy_register_lookup(&twl4030_usb_lookup);
 		pmic_data->usb = &omap3_usb_pdata;
+	}
 
 	if (pdata_flags & TWL_COMMON_PDATA_BCI && !pmic_data->bci)
 		pmic_data->bci = &omap3_bci_pdata;
