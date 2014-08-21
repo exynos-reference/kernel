@@ -586,7 +586,6 @@ void exynos5420_powerdown_conf(enum sys_powerdown mode)
 	pmu_raw_writel(this_cluster, EXYNOS_IROM_DATA2);
 }
 
-
 static void exynos5_powerdown_conf(enum sys_powerdown mode)
 {
 	unsigned int i;
@@ -719,6 +718,19 @@ static void exynos5420_pmu_init(void)
 	pr_info("EXYNOS5420 PMU initialized\n");
 }
 
+static void exynos5800_pmu_init(void)
+{
+	unsigned int value;
+
+	exynos5420_pmu_init();
+
+	value = pmu_raw_readl(EXYNOS5420_LPI_MASK);
+	value |= EXYNOS5800_POWER_GATE_CTRL;
+	pmu_raw_writel(value, EXYNOS5420_LPI_MASK);
+
+	pr_info("EXYNOS5800 PMU initialized\n");
+}
+
 static int pmu_restart_notify(struct notifier_block *this,
 		unsigned long code, void *unused)
 {
@@ -752,6 +764,12 @@ static struct exynos_pmu_data exynos5420_pmu_data = {
 	.powerdown_conf	= exynos5420_powerdown_conf,
 };
 
+static struct exynos_pmu_data exynos5800_pmu_data = {
+	.pmu_config	= exynos5420_pmu_config,
+	.pmu_init	= exynos5800_pmu_init,
+	.powerdown_conf	= exynos5420_powerdown_conf,
+};
+
 /*
  * PMU platform driver and devicetree bindings.
  */
@@ -771,6 +789,9 @@ static const struct of_device_id exynos_pmu_of_device_ids[] = {
 	}, {
 		.compatible = "samsung,exynos5420-pmu",
 		.data = &exynos5420_pmu_data,
+	}, {
+		.compatible = "samsung,exynos5800-pmu",
+		.data = &exynos5800_pmu_data,
 	},
 	{ /*sentinel*/ },
 };
