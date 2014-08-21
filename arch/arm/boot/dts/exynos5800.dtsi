@@ -26,3 +26,7 @@
 &mfc {
 	compatible = "samsung,mfc-v8";
 };
+
+&pmu_system_controller {
+	compatible = "samsung,exynos5800-pmu", "syscon";
+};
