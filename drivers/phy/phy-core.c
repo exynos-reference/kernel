@@ -55,36 +55,6 @@ static int devm_phy_match(struct device *dev, void *res, void *match_data)
 	return res == match_data;
 }
 
-static struct phy *phy_lookup(struct device *device, const char *port)
-{
-	unsigned int count;
-	struct phy *phy;
-	struct device *dev;
-	struct phy_consumer *consumers;
-	struct class_dev_iter iter;
-
-	class_dev_iter_init(&iter, phy_class, NULL, NULL);
-	while ((dev = class_dev_iter_next(&iter))) {
-		phy = to_phy(dev);
-
-		if (!phy->init_data)
-			continue;
-		count = phy->init_data->num_consumers;
-		consumers = phy->init_data->consumers;
-		while (count--) {
-			if (!strcmp(consumers->dev_name, dev_name(device)) &&
-					!strcmp(consumers->port, port)) {
-				class_dev_iter_exit(&iter);
-				return phy;
-			}
-			consumers++;
-		}
-	}
-
-	class_dev_iter_exit(&iter);
-	return ERR_PTR(-ENODEV);
-}
-
 /**
  * phy_register_lookup() - register PHY/device association
  * @pl: association to register
@@ -210,10 +180,6 @@ static struct phy *phy_find(struct device *dev, const char *con_id)
 		}
 		class_dev_iter_exit(&iter);
 	}
-
-	/* fall-back to the old lookup method for now */
-	if (IS_ERR(phy))
-		phy = phy_lookup(dev, con_id);
 	return phy;
 }
 
@@ -721,13 +687,11 @@ EXPORT_SYMBOL_GPL(devm_of_phy_get);
  * @dev: device that is creating the new phy
  * @node: device node of the phy
  * @ops: function pointers for performing phy operations
- * @init_data: contains the list of PHY consumers or NULL
  *
  * Called to create a phy using phy framework.
  */
 struct phy *phy_create(struct device *dev, struct device_node *node,
-		       const struct phy_ops *ops,
-		       struct phy_init_data *init_data)
+		       const struct phy_ops *ops)
 {
 	int ret;
 	int id;
@@ -765,7 +729,6 @@ struct phy *phy_create(struct device *dev, struct device_node *node,
 	phy->dev.of_node = node ?: dev->of_node;
 	phy->id = id;
 	phy->ops = ops;
-	phy->init_data = init_data;
 
 	ret = dev_set_name(&phy->dev, "phy-%s.%d", dev_name(dev), id);
 	if (ret)
@@ -800,7 +763,6 @@ EXPORT_SYMBOL_GPL(phy_create);
  * @dev: device that is creating the new phy
  * @node: device node of the phy
  * @ops: function pointers for performing phy operations
- * @init_data: contains the list of PHY consumers or NULL
  *
  * Creates a new PHY device adding it to the PHY class.
  * While at that, it also associates the device with the phy using devres.
@@ -808,8 +770,7 @@ EXPORT_SYMBOL_GPL(phy_create);
  * then, devres data is freed.
  */
 struct phy *devm_phy_create(struct device *dev, struct device_node *node,
-			    const struct phy_ops *ops,
-			    struct phy_init_data *init_data)
+			    const struct phy_ops *ops)
 {
 	struct phy **ptr, *phy;
 
@@ -817,7 +778,7 @@ struct phy *devm_phy_create(struct device *dev, struct device_node *node,
 	if (!ptr)
 		return ERR_PTR(-ENOMEM);
 
-	phy = phy_create(dev, node, ops, init_data);
+	phy = phy_create(dev, node, ops);
 	if (!IS_ERR(phy)) {
 		*ptr = phy;
 		devres_add(dev, ptr);
