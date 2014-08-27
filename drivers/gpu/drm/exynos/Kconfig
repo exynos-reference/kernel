@@ -54,6 +54,7 @@ config DRM_EXYNOS_DP
 	depends on DRM_EXYNOS_FIMD && ARCH_EXYNOS
 	default DRM_EXYNOS
 	select DRM_PANEL
+	select DRM_BRIDGE
 	help
 	  This enables support for DP device.
 
