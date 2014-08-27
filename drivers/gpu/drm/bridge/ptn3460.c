@@ -287,6 +287,7 @@ int ptn3460_bridge_attach(struct drm_bridge *bridge)
 	struct ptn3460_bridge *ptn_bridge = bridge_to_ptn3460(bridge);
 	int ret;
 
+	ptn_bridge->connector.polled = DRM_CONNECTOR_POLL_HPD;
 	ret = drm_connector_init(bridge->drm, &ptn_bridge->connector,
 			&ptn3460_connector_funcs, DRM_MODE_CONNECTOR_LVDS);
 	if (ret) {
@@ -301,6 +302,8 @@ int ptn3460_bridge_attach(struct drm_bridge *bridge)
 
 	if (ptn_bridge->panel)
 		drm_panel_attach(ptn_bridge->panel, &ptn_bridge->connector);
+
+	drm_helper_hpd_irq_event(ptn_bridge->connector.dev);
 
 	return ret;
 }
