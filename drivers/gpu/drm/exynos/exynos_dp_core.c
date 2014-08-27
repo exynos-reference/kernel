@@ -987,9 +987,17 @@ static struct drm_connector_helper_funcs exynos_dp_connector_helper_funcs = {
 };
 
 /* returns the number of bridges attached */
-static int exynos_drm_attach_lcd_bridge(struct drm_device *dev,
+static int exynos_drm_attach_lcd_bridge(struct exynos_dp_device *dp,
 		struct drm_encoder *encoder)
 {
+	int ret;
+
+	ret = drm_bridge_attach(dp->bridge, encoder);
+	if (ret) {
+		DRM_ERROR("Failed to attach bridge to encoder\n");
+		return ret;
+	}
+
 	return 0;
 }
 
@@ -1003,9 +1011,11 @@ static int exynos_dp_create_connector(struct exynos_drm_display *display,
 	dp->encoder = encoder;
 
 	/* Pre-empt DP connector creation if there's a bridge */
-	ret = exynos_drm_attach_lcd_bridge(dp->drm_dev, encoder);
-	if (ret)
-		return 0;
+	if (dp->bridge) {
+		ret = exynos_drm_attach_lcd_bridge(dp, encoder);
+		if (!ret)
+			return 0;
+	}
 
 	connector->polled = DRM_CONNECTOR_POLL_HPD;
 
@@ -1257,7 +1267,7 @@ static int exynos_dp_bind(struct device *dev, struct device *master, void *data)
 	if (ret)
 		return ret;
 
-	if (!dp->panel) {
+	if (!dp->panel && !dp->bridge) {
 		ret = exynos_dp_dt_parse_panel(dp);
 		if (ret)
 			return ret;
@@ -1348,7 +1358,7 @@ static const struct component_ops exynos_dp_ops = {
 static int exynos_dp_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
-	struct device_node *panel_node;
+	struct device_node *node;
 	struct exynos_dp_device *dp;
 	int ret;
 
@@ -1362,11 +1372,19 @@ static int exynos_dp_probe(struct platform_device *pdev)
 	if (!dp)
 		return -ENOMEM;
 
-	panel_node = of_parse_phandle(dev->of_node, "panel", 0);
-	if (panel_node) {
-		dp->panel = of_drm_find_panel(panel_node);
-		of_node_put(panel_node);
+	node = of_parse_phandle(dev->of_node, "panel", 0);
+	if (node) {
+		dp->panel = of_drm_find_panel(node);
+		of_node_put(node);
 		if (!dp->panel)
+			return -EPROBE_DEFER;
+	}
+
+	node = of_parse_phandle(dev->of_node, "bridge", 0);
+	if (node) {
+		dp->bridge = of_drm_find_bridge(node);
+		of_node_put(node);
+		if (!dp->bridge)
 			return -EPROBE_DEFER;
 	}
 
