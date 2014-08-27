@@ -10,7 +10,9 @@ menu "bridge chips"
 
 config DRM_PTN3460
 	tristate "PTN3460 DP/LVDS bridge"
-	depends on DRM_BRIDGE
-	---help---
+	depends on OF
+	depends on I2C
+	help
+	  ptn3460 eDP-LVDS bridge chip driver.
 
 endmenu
