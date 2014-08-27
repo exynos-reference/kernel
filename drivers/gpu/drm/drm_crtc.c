@@ -1039,7 +1039,7 @@ int drm_bridge_init(struct drm_device *dev, struct drm_bridge *bridge)
 	if (ret)
 		goto out;
 
-	bridge->dev = dev;
+	bridge->drm = dev;
 
 	list_add_tail(&bridge->head, &dev->mode_config.bridge_list);
 	dev->mode_config.num_bridge++;
@@ -1058,7 +1058,7 @@ EXPORT_SYMBOL(drm_bridge_init);
  */
 void drm_bridge_cleanup(struct drm_bridge *bridge)
 {
-	struct drm_device *dev = bridge->dev;
+	struct drm_device *dev = bridge->drm;
 
 	drm_modeset_lock_all(dev);
 	drm_mode_object_put(dev, &bridge->base);

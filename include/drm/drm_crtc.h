@@ -629,6 +629,7 @@ struct drm_plane {
 
 /**
  * drm_bridge_funcs - drm_bridge control functions
+ * @attach: Called during drm_bridge_attach
  * @mode_fixup: Try to fixup (or reject entirely) proposed mode for this bridge
  * @disable: Called right before encoder prepare, disables the bridge
  * @post_disable: Called right after encoder prepare, for lockstepped disable
@@ -638,6 +639,7 @@ struct drm_plane {
  * @destroy: make object go away
  */
 struct drm_bridge_funcs {
+	int (*attach)(struct drm_bridge *bridge);
 	bool (*mode_fixup)(struct drm_bridge *bridge,
 			   const struct drm_display_mode *mode,
 			   struct drm_display_mode *adjusted_mode);
@@ -660,8 +662,11 @@ struct drm_bridge_funcs {
  * @driver_private: pointer to the bridge driver's internal context
  */
 struct drm_bridge {
-	struct drm_device *dev;
+	struct device *dev;
+	struct drm_device *drm;
+	struct drm_encoder *encoder;
 	struct list_head head;
+	struct list_head list;
 
 	struct drm_mode_object base;
 
@@ -906,6 +911,11 @@ extern void drm_connector_cleanup(struct drm_connector *connector);
 /* helper to unplug all connectors from sysfs for device */
 extern void drm_connector_unplug_all(struct drm_device *dev);
 
+extern int drm_bridge_add(struct drm_bridge *bridge);
+extern void drm_bridge_remove(struct drm_bridge *bridge);
+extern struct drm_bridge *of_drm_find_bridge(struct device_node *np);
+extern int drm_bridge_attach(struct drm_bridge *bridge,
+				struct drm_encoder *encoder);
 extern int drm_bridge_init(struct drm_device *dev, struct drm_bridge *bridge);
 extern void drm_bridge_cleanup(struct drm_bridge *bridge);
 

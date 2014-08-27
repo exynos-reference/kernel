@@ -1,5 +1,16 @@
-config DRM_PTN3460
-	tristate "PTN3460 DP/LVDS bridge"
+config DRM_BRIDGE
+	tristate
 	depends on DRM
 	select DRM_KMS_HELPER
+	help
+	  Bridge registration and lookup framework.
+
+menu "bridge chips"
+	depends on DRM_BRIDGE
+
+config DRM_PTN3460
+	tristate "PTN3460 DP/LVDS bridge"
+	depends on DRM_BRIDGE
 	---help---
+
+endmenu
