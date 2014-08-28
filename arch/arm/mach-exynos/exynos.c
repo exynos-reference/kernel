@@ -283,6 +283,7 @@ static void __init exynos_init_irq(void)
 
 static const struct of_device_id exynos_cpufreq_matches[] = {
 	{ .compatible = "samsung,exynos5420", .data = "arm-bL-cpufreq-dt" },
+	{ .compatible = "samsung,exynos5800", .data = "arm-bL-cpufreq-dt" },
 	{ .compatible = "samsung,exynos5250", .data = "cpufreq-cpu0" },
 	{ .compatible = "samsung,exynos4210", .data = "cpufreq-cpu0" },
 	{ .compatible = "samsung,exynos5440", .data = "exynos5440-cpufreq" },
