@@ -193,8 +193,8 @@
 
 			buck2_reg: BUCK2 {
 				regulator-name = "vdd_arm";
-				regulator-min-microvolt = <800000>;
-				regulator-max-microvolt = <1500000>;
+				regulator-min-microvolt = <1350000>;
+				regulator-max-microvolt = <1350000>;
 				regulator-always-on;
 				regulator-boot-on;
 				regulator-ramp-delay = <12500>;
@@ -228,8 +228,8 @@
 
 			buck6_reg: BUCK6 {
 				regulator-name = "vdd_kfc";
-				regulator-min-microvolt = <800000>;
-				regulator-max-microvolt = <1500000>;
+				regulator-min-microvolt = <1300000>;
+				regulator-max-microvolt = <1300000>;
 				regulator-always-on;
 				regulator-boot-on;
 				regulator-ramp-delay = <12500>;
