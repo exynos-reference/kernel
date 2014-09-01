@@ -158,6 +158,7 @@
 		reg = <0x9>;
 		#clock-cells = <1>;
 
+/*
 		inb1-supply = <&tps65090_dcdc2>;
 		inb2-supply = <&tps65090_dcdc1>;
 		inb3-supply = <&tps65090_dcdc2>;
@@ -178,6 +179,7 @@
 		inl7-supply = <&buck9_reg>;
 		inl9-supply = <&tps65090_dcdc2>;
 		inl10-supply = <&buck7_reg>;
+*/
 
 		regulators {
 			buck1_reg: BUCK1 {
