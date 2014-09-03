@@ -168,6 +168,7 @@
 		reg = <0x9>;
 		#clock-cells = <1>;
 
+/*
 		inb1-supply = <&tps65090_dcdc2>;
 		inb2-supply = <&tps65090_dcdc1>;
 		inb3-supply = <&tps65090_dcdc2>;
@@ -188,6 +189,7 @@
 		inl7-supply = <&buck9_reg>;
 		inl9-supply = <&tps65090_dcdc2>;
 		inl10-supply = <&buck7_reg>;
+*/
 
 		regulators {
 			buck1_reg: BUCK1 {
@@ -201,8 +203,8 @@
 
 			buck2_reg: BUCK2 {
 				regulator-name = "vdd_arm";
-				regulator-min-microvolt = <800000>;
-				regulator-max-microvolt = <1500000>;
+				regulator-min-microvolt = <1350000>;
+				regulator-max-microvolt = <1350000>;
 				regulator-always-on;
 				regulator-boot-on;
 				regulator-ramp-delay = <12500>;
@@ -236,8 +238,8 @@
 
 			buck6_reg: BUCK6 {
 				regulator-name = "vdd_kfc";
-				regulator-min-microvolt = <800000>;
-				regulator-max-microvolt = <1500000>;
+				regulator-min-microvolt = <1350000>;
+				regulator-max-microvolt = <1350000>;
 				regulator-always-on;
 				regulator-boot-on;
 				regulator-ramp-delay = <12500>;
