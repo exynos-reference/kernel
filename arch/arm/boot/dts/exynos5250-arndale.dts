@@ -567,3 +567,7 @@
 		usb-phy = <&usb2_phy>;
 	};
 };
+
+&cpu0 {
+	cpu0-supply = <&buck2_reg>;
+};
