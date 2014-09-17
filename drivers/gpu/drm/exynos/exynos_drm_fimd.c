@@ -104,6 +104,14 @@ static struct fimd_driver_data s3c64xx_fimd_driver_data = {
 	.has_limited_fmt = 1,
 };
 
+static struct fimd_driver_data exynos3_fimd_driver_data = {
+	.timing_base = 0x20000,
+	.lcdblk_offset = 0x210,
+	.lcdblk_bypass_shift = 1,
+	.has_shadowcon = 1,
+	.has_vidoutcon = 1,
+};
+
 static struct fimd_driver_data exynos4_fimd_driver_data = {
 	.timing_base = 0x0,
 	.lcdblk_offset = 0x210,
@@ -168,6 +176,8 @@ struct fimd_context {
 static const struct of_device_id fimd_driver_dt_match[] = {
 	{ .compatible = "samsung,s3c6400-fimd",
 	  .data = &s3c64xx_fimd_driver_data },
+	{ .compatible = "samsung,exynos3250-fimd",
+	  .data = &exynos3_fimd_driver_data },
 	{ .compatible = "samsung,exynos4210-fimd",
 	  .data = &exynos4_fimd_driver_data },
 	{ .compatible = "samsung,exynos5250-fimd",
@@ -204,7 +214,6 @@ static void fimd_wait_for_vblank(struct exynos_drm_manager *mgr)
 		DRM_DEBUG_KMS("vblank wait timed out.\n");
 }
 
-
 static void fimd_clear_channel(struct exynos_drm_manager *mgr)
 {
 	struct fimd_context *ctx = mgr->ctx;
@@ -214,17 +223,31 @@ static void fimd_clear_channel(struct exynos_drm_manager *mgr)
 
 	/* Check if any channel is enabled. */
 	for (win = 0; win < WINDOWS_NR; win++) {
-		u32 val = readl(ctx->regs + SHADOWCON);
-		if (val & SHADOWCON_CHx_ENABLE(win)) {
-			val &= ~SHADOWCON_CHx_ENABLE(win);
-			writel(val, ctx->regs + SHADOWCON);
+		u32 val = readl(ctx->regs + WINCON(win));
+
+		if (val & WINCONx_ENWIN) {
+			/* wincon */
+			val &= ~WINCONx_ENWIN;
+			writel(val, ctx->regs + WINCON(win));
+
+			/* unprotect windows */
+			if (ctx->driver_data->has_shadowcon) {
+				val = readl(ctx->regs + SHADOWCON);
+				val &= ~SHADOWCON_CHx_ENABLE(win);
+				writel(val, ctx->regs + SHADOWCON);
+			}
 			ch_enabled = 1;
 		}
 	}
 
 	/* Wait for vsync, as disable channel takes effect at next vsync */
-	if (ch_enabled)
+	if (ch_enabled) {
+		unsigned int state = ctx->suspended;
+
+		ctx->suspended = 0;
 		fimd_wait_for_vblank(mgr);
+		ctx->suspended = state;
+	}
 }
 
 static int fimd_mgr_initialize(struct exynos_drm_manager *mgr,
