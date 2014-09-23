@@ -24,6 +24,7 @@
 
 	chosen {
 		linux,stdout-path = &serial_2;
+		bootargs = "earlycon=exynos4210,0x14C30000 console=ttySAC0,115200 clk_ignore_unused root=/dev/ram0 ramdisk=16384 initrd=0x42000000,16M";
 	};
 
 	memory@40000000 {
