@@ -1,6 +1,9 @@
 #ifndef __SAMSUNG_H
 #define __SAMSUNG_H
 
+/* Maximum UART ports available */
+#define MAX_SAMSUNG_UARTS       4
+
 /*
  * Driver for Samsung SoC onboard UARTs.
  *
@@ -38,7 +41,7 @@ struct s3c24xx_uart_info {
 struct s3c24xx_serial_drv_data {
 	struct s3c24xx_uart_info	*info;
 	struct s3c2410_uartcfg		*def_cfg;
-	unsigned int			fifosize[CONFIG_SERIAL_SAMSUNG_UARTS];
+	unsigned int			fifosize[MAX_SAMSUNG_UARTS];
 };
 
 struct s3c24xx_uart_port {

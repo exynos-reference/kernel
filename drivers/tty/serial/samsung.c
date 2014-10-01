@@ -962,14 +962,14 @@ static struct uart_ops s3c24xx_serial_ops = {
 static struct uart_driver s3c24xx_uart_drv = {
 	.owner		= THIS_MODULE,
 	.driver_name	= "s3c2410_serial",
-	.nr		= CONFIG_SERIAL_SAMSUNG_UARTS,
+	.nr		= MAX_SAMSUNG_UARTS,
 	.cons		= S3C24XX_SERIAL_CONSOLE,
 	.dev_name	= S3C24XX_SERIAL_NAME,
 	.major		= S3C24XX_SERIAL_MAJOR,
 	.minor		= S3C24XX_SERIAL_MINOR,
 };
 
-static struct s3c24xx_uart_port s3c24xx_serial_ports[CONFIG_SERIAL_SAMSUNG_UARTS] = {
+static struct s3c24xx_uart_port s3c24xx_serial_ports[MAX_SAMSUNG_UARTS] = {
 	[0] = {
 		.port = {
 			.lock		= __SPIN_LOCK_UNLOCKED(s3c24xx_serial_ports[0].port.lock),
@@ -992,8 +992,6 @@ static struct s3c24xx_uart_port s3c24xx_serial_ports[CONFIG_SERIAL_SAMSUNG_UARTS
 			.line		= 1,
 		}
 	},
-#if CONFIG_SERIAL_SAMSUNG_UARTS > 2
-
 	[2] = {
 		.port = {
 			.lock		= __SPIN_LOCK_UNLOCKED(s3c24xx_serial_ports[2].port.lock),
@@ -1005,8 +1003,6 @@ static struct s3c24xx_uart_port s3c24xx_serial_ports[CONFIG_SERIAL_SAMSUNG_UARTS
 			.line		= 2,
 		}
 	},
-#endif
-#if CONFIG_SERIAL_SAMSUNG_UARTS > 3
 	[3] = {
 		.port = {
 			.lock		= __SPIN_LOCK_UNLOCKED(s3c24xx_serial_ports[3].port.lock),
@@ -1018,7 +1014,6 @@ static struct s3c24xx_uart_port s3c24xx_serial_ports[CONFIG_SERIAL_SAMSUNG_UARTS
 			.line		= 3,
 		}
 	}
-#endif
 };
 
 /* s3c24xx_serial_resetport
@@ -1590,7 +1585,7 @@ s3c24xx_serial_console_setup(struct console *co, char *options)
 
 	/* is this a valid port */
 
-	if (co->index == -1 || co->index >= CONFIG_SERIAL_SAMSUNG_UARTS)
+	if (co->index == -1 || co->index >= MAX_SAMSUNG_UARTS)
 		co->index = 0;
 
 	port = &s3c24xx_serial_ports[co->index].port;
