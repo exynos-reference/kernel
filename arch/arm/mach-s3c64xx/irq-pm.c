@@ -55,10 +55,10 @@ static struct irq_grp_save {
 	u32	mask;
 } eint_grp_save[5];
 
-#ifndef CONFIG_SERIAL_SAMSUNG_UARTS
-#define SERIAL_SAMSUNG_UARTS 0
+#ifndef CONFIG_SERIAL_SAMSUNG
+#define SERIAL_SAMSUNG_UARTS	0
 #else
-#define	SERIAL_SAMSUNG_UARTS CONFIG_SERIAL_SAMSUNG_UARTS
+#define SERIAL_SAMSUNG_UARTS	4
 #endif
 
 static u32 irq_uart_mask[SERIAL_SAMSUNG_UARTS];
