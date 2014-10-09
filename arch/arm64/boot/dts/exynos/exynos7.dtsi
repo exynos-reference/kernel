@@ -26,6 +26,7 @@
 		pinctrl5 = &pinctrl_ese;
 		pinctrl6 = &pinctrl_fsys0;
 		pinctrl7 = &pinctrl_fsys1;
+		pinctrl8 = &pinctrl_bus1;
 	};
 
 	cpus {
@@ -240,6 +241,12 @@
 			compatible = "samsung,exynos7-pinctrl";
 			reg = <0x13470000 0x1000>;
 			interrupts = <0 383 0>;
+		};
+
+		pinctrl_bus1: pinctrl@14870000 {
+			compatible = "samsung,exynos7-pinctrl";
+			reg = <0x14870000 0x1000>;
+			interrupts = <0 384 0>;
 		};
 
 		pinctrl_nfc: pinctrl@14cd0000 {
