@@ -327,6 +327,17 @@ static void fimd_commit(struct exynos_drm_manager *mgr)
 	struct fimd_driver_data *driver_data = ctx->driver_data;
 	void *timing_base = ctx->regs + driver_data->timing_base;
 	u32 val, clkdiv;
+	void __iomem *iommu;
+
+	/* Disable FIMD IOMMU: mdma0 */
+	iommu = ioremap(0x14640000, 4);
+	writel(0, iommu);
+	iounmap(iommu);
+
+	/* Disable FIMD IOMMU: mdma1 */
+	iommu = ioremap(0x14680000, 4);
+	writel(0, iommu);
+	iounmap(iommu);
 
 	if (ctx->suspended)
 		return;
