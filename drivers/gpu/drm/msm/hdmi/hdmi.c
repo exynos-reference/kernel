@@ -65,6 +65,9 @@ void hdmi_destroy(struct kref *kref)
 	if (hdmi->i2c)
 		hdmi_i2c_destroy(hdmi->i2c);
 
+	if (hdmi->bridge)
+		hdmi_bridge_destroy(hdmi->bridge);
+
 	platform_set_drvdata(hdmi->pdev, NULL);
 }
 
@@ -234,9 +237,7 @@ struct hdmi *hdmi_init(struct drm_device *dev, struct drm_encoder *encoder)
 
 fail:
 	if (hdmi) {
-		/* bridge/connector are normally destroyed by drm: */
-		if (hdmi->bridge)
-			hdmi->bridge->funcs->destroy(hdmi->bridge);
+		/* bridge is normally destroyed by drm: */
 		if (hdmi->connector)
 			hdmi->connector->funcs->destroy(hdmi->connector);
 		hdmi_destroy(&hdmi->refcount);
