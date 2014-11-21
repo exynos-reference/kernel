@@ -149,7 +149,6 @@ struct exynos5_usbdrd_phy_config {
 	void (*phy_isol)(struct phy_usb_instance *inst, u32 on);
 	void (*phy_init)(struct exynos5_usbdrd_phy *phy_drd);
 	unsigned int (*set_refclk)(struct phy_usb_instance *inst);
-	int (*phy_calibrate)(struct phy_usb_instance *inst);
 };
 
 struct exynos5_usbdrd_phy_drvdata {
@@ -419,9 +418,10 @@ static int exynos5_usbdrd_phy_init(struct phy *phy)
 	 * Calibrate some of the PHY parameters, using cr_port control
 	 * register, which are internal to PHY and are not exposed
 	 * directly to the outside world for configuring.
+	 * Call respective phy-calibrate given by certain platform
 	 */
-	if (inst->phy_cfg->phy_calibrate) {
-		ret = inst->phy_cfg->phy_calibrate(inst);
+	if (phy_drd->drv_data->phy_exynos_calibrate) {
+		ret = phy_drd->drv_data->phy_exynos_calibrate(phy_drd);
 		if (ret)
 			dev_err(phy_drd->dev,
 				"Exiting init: Failed to calibrate PHY\n");
@@ -660,18 +660,6 @@ static int exynos5420_usbdrd_phy_calibrate(struct exynos5_usbdrd_phy *phy_drd)
 	return ret;
 }
 
-/* Calibrate PIPE3 PHY settings, if any */
-static int exynos5_usbdrd_pipe3_calibrate(struct phy_usb_instance *inst)
-{
-	struct exynos5_usbdrd_phy *phy_drd = to_usbdrd_phy(inst);
-
-	/* Call respective phy_calibrate given by certain platform */
-	if (phy_drd->drv_data->phy_exynos_calibrate)
-		return phy_drd->drv_data->phy_exynos_calibrate(phy_drd);
-
-	return -ENODEV;
-}
-
 static struct phy *exynos5_usbdrd_phy_xlate(struct device *dev,
 					struct of_phandle_args *args)
 {
@@ -703,7 +691,6 @@ static const struct exynos5_usbdrd_phy_config phy_cfg_exynos5[] = {
 		.phy_isol	= exynos5_usbdrd_phy_isol,
 		.phy_init	= exynos5_usbdrd_pipe3_init,
 		.set_refclk	= exynos5_usbdrd_pipe3_set_refclk,
-		.phy_calibrate	= exynos5_usbdrd_pipe3_calibrate,
 	},
 };
 
