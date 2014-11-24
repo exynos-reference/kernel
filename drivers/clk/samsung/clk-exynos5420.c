@@ -1169,9 +1169,9 @@ static struct samsung_gate_clock exynos5x_gate_clks[] __initdata = {
 	GATE(CLK_MIXER, "mixer", "aclk200_disp1", GATE_IP_DISP1, 5, 0, 0),
 	GATE(CLK_HDMI, "hdmi", "aclk200_disp1", GATE_IP_DISP1, 6, 0, 0),
 	GATE(CLK_SMMU_FIMD1M0, "smmu_fimd1m0", "dout_disp1_blk",
-			GATE_IP_DISP1, 7, 0, 0),
+			GATE_IP_DISP1, 7, CLK_IGNORE_UNUSED, 0),
 	GATE(CLK_SMMU_FIMD1M1, "smmu_fimd1m1", "dout_disp1_blk",
-			GATE_IP_DISP1, 8, 0, 0),
+			GATE_IP_DISP1, 8, CLK_IGNORE_UNUSED, 0),
 	GATE(CLK_SMMU_MIXER, "smmu_mixer", "aclk200_disp1",
 			GATE_IP_DISP1, 9, 0, 0),
 
